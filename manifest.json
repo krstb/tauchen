@@ -1,7 +1,7 @@
 {
-  "short_name": "Vorlage APP",
-  "name": "vorlage",
-  "description": "beschreibung",
+  "short_name": "Tauchen",
+  "name": "Tauchen",
+  "description": "Tauchgang Berechnung",
   "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
