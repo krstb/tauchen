@@ -215,7 +215,7 @@
         </div>
     </div>
     
-    <p class="note">von Papa für Max ;-  Version 1.5  21.07.2026</p>
+    <p class="note">von Papa für Max  -  Version 2.0  -  21.07.2026</p>
 </div>
 
 <script>
@@ -226,15 +226,29 @@ const deco2000ExactTable = {
         { maxTime: 54,  group: 'E', stops: [] },
         { maxTime: 72,  group: 'F', stops: [] },
         { maxTime: 90,  group: 'G', stops: [] },
-        { maxTime: 108, group: 'G', stops: [] }
-    ],
+        { maxTime: 108, group: 'G', stops: [] },
+        { maxTime: 126, group: 'G', stops: [] },
+        { maxTime: 144, group: 'G', stops: [{ depth: 3, min: 4 }] },
+        
+        <!-- eigene Erweiterung -->
+        { maxTime: 162, group: 'G', stops: [{ depth: 3, min: 8 }] },
+        { maxTime: 180, group: 'G', stops: [{ depth: 3, min: 12 }] },
+        { maxTime: 198, group: 'G', stops: [{ depth: 3, min: 16 }] },
+        { maxTime: 216, group: 'G', stops: [{ depth: 3, min: 20 }] },
+        { maxTime: 234, group: 'G', stops: [{ depth: 3, min: 24 }] }
+     ],
     15: [
         { maxTime: 24, group: 'D', stops: [] },
         { maxTime: 36, group: 'E', stops: [] },
         { maxTime: 48, group: 'E', stops: [] },
         { maxTime: 60, group: 'F', stops: [] },
         { maxTime: 72, group: 'G', stops: [] },
-        { maxTime: 84, group: 'G', stops: [{ depth: 3, min: 4 }] }
+        { maxTime: 84, group: 'G', stops: [{ depth: 3, min: 4 }] },
+        
+        <!-- eigene Erweiterung -->
+        { maxTime: 96, group: 'G', stops: [{ depth: 3, min: 8 }] },
+        { maxTime: 108, group: 'G', stops: [{ depth: 3, min: 14 }] },
+        { maxTime: 120, group: 'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 22 }] }
     ],
     18: [
         { maxTime: 15, group: 'C', stops: [] },
@@ -243,7 +257,12 @@ const deco2000ExactTable = {
         { maxTime: 45, group: 'F', stops: [] },
         { maxTime: 55, group: 'F', stops: [{ depth: 3, min: 4 }] },
         { maxTime: 65, group: 'G', stops: [{ depth: 3, min: 8 }] },
-        { maxTime: 75, group: 'G', stops: [{ depth: 3, min: 14 }] }
+        { maxTime: 75, group: 'G', stops: [{ depth: 3, min: 14 }] },
+        
+        <!-- eigene Erweiterung -->
+        { maxTime: 90, group: 'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 18 }] },
+        { maxTime: 105, group: 'G', stops: [{ depth: 6, min: 4 },{ depth: 3, min: 22 }] },
+        { maxTime: 115, group: 'G', stops: [{ depth: 6, min: 8 },{ depth: 3, min: 26 }] }  
     ],
     21: [
         { maxTime: 11, group: 'C', stops: [] },
@@ -256,7 +275,13 @@ const deco2000ExactTable = {
         { maxTime: 46, group: 'F', stops: [{ depth: 3, min: 7 }] },
         { maxTime: 51, group: 'G', stops: [{ depth: 3, min: 10 }] },
         { maxTime: 56, group: 'G', stops: [{ depth: 3, min: 13 }] },
-        { maxTime: 61, group: 'G', stops: [{ depth: 3, min: 17 }] }
+        { maxTime: 61, group: 'G', stops: [{ depth: 3, min: 17 }] },
+        
+        <!-- eigene Erweiterung -->
+        { maxTime: 66, group: 'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 20 }] },
+        { maxTime: 71, group: 'G', stops: [{ depth: 6, min: 4 },{ depth: 3, min: 23 }] },
+        { maxTime: 76, group: 'G', stops: [{ depth: 6, min: 8 },{ depth: 3, min: 26 }] },
+        { maxTime: 81, group: 'G', stops: [{ depth: 6, min: 12 },{ depth: 3, min: 29 }] }
     ],
     24: [
         { maxTime: 7,  group: 'B', stops: [] },
@@ -271,7 +296,13 @@ const deco2000ExactTable = {
         { maxTime: 43, group: 'G', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 12 }] },
         { maxTime: 47, group: 'G', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 14 }] },
         { maxTime: 51, group: 'G', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 17 }] },
-        { maxTime: 55, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 19 }] }
+        { maxTime: 55, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 19 }] },
+        
+        <!-- eigene Erweiterung -->
+        { maxTime: 59, group: 'G', stops: [{ depth: 6, min: 7 }, { depth: 3, min: 21 }] },
+        { maxTime: 63, group: 'G', stops: [{ depth: 6, min: 9 }, { depth: 3, min: 23 }] },
+        { maxTime: 67, group: 'G', stops: [{ depth: 6, min: 11 }, { depth: 3, min: 25 }] }
+        
     ],
     27: [
         { maxTime: 6,  group: 'B', stops: [] },
