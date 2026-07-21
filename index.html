@@ -155,8 +155,8 @@
 <body>
 
 <div class="container">
-    <h1>🤿 Tauchgangs-Planer (DECO 2000)</h1>
-    <div class="subtitle">Tauchtiefen 6-42m</div>
+    <h1>🤿 Tauchgangs-Planer (VDST DECO 2000)</h1>
+    <div class="subtitle">Tauchtiefen 12-63m</div>
 
     <!-- AMV RECHNER -->
     <div class="card">
@@ -217,53 +217,255 @@
 </div>
 
 <script>
-const deco2000Matrix = {
-    6: [ { maxTime: 999, stops: [] } ],
-    9: [ { maxTime: 999, stops: [] } ],
-    12: [ { maxTime: 75, stops: [] }, { maxTime: 999, stops: [{ depth: 3, min: 5 }] } ],
-    15: [ { maxTime: 50, stops: [] }, { maxTime: 999, stops: [{ depth: 3, min: 10 }] } ],
-    18: [ { maxTime: 35, stops: [] }, { maxTime: 50, stops: [{ depth: 3, min: 5 }] }, { maxTime: 999, stops: [{ depth: 3, min: 15 }] } ],
-    21: [ { maxTime: 25, stops: [] }, { maxTime: 40, stops: [{ depth: 3, min: 5 }] }, { maxTime: 999, stops: [{ depth: 3, min: 20 }] } ],
-    24: [ { maxTime: 20, stops: [] }, { maxTime: 30, stops: [{ depth: 3, min: 5 }] }, { maxTime: 40, stops: [{ depth: 3, min: 12 }] }, { maxTime: 999, stops: [{ depth: 3, min: 25 }] } ],
-    27: [ { maxTime: 20, stops: [] }, { maxTime: 30, stops: [{ depth: 3, min: 2 }] }, { maxTime: 40, stops: [{ depth: 3, min: 15 }] }, { maxTime: 999, stops: [{ depth: 3, min: 30 }] } ],
-    30: [ 
-        { maxTime: 15, stops: [] },
-        { maxTime: 20, stops: [{ depth: 3, min: 2 }] },
-        { maxTime: 25, stops: [{ depth: 3, min: 5 }] },
-        { maxTime: 30, stops: [{ depth: 6, min: 2 }, { depth: 3, min: 7 }] },
-        { maxTime: 40, stops: [{ depth: 6, min: 6 }, { depth: 3, min: 16 }] },
-        { maxTime: 999, stops: [{ depth: 6, min: 10 }, { depth: 3, min: 25 }] }
+// =========================================================================
+// EXAKTE DECO 2000 DATEN (0 - 700 m ü. N.N., Aufstieg 10 m/min)
+// VDST Austauchtabelle (Autor: Dr. Max Hahn) - Exakt laut Plastikkarte
+// =========================================================================
+
+const deco2000ExactTable = {
+    12: [
+        { maxTime: 36,  group: 'D', stops: [] },
+        { maxTime: 54,  group: 'E', stops: [] },
+        { maxTime: 72,  group: 'F', stops: [] },
+        { maxTime: 90,  group: 'G', stops: [] },
+        { maxTime: 108, group: 'G', stops: [] }
     ],
-    33: [ { maxTime: 10, stops: [] }, { maxTime: 20, stops: [{ depth: 3, min: 5 }] }, { maxTime: 30, stops: [{ depth: 6, min: 4 }, { depth: 3, min: 12 }] }, { maxTime: 999, stops: [{ depth: 6, min: 15 }, { depth: 3, min: 30 }] } ],
+    15: [
+        { maxTime: 24, group: 'D', stops: [] },
+        { maxTime: 36, group: 'E', stops: [] },
+        { maxTime: 48, group: 'E', stops: [] },
+        { maxTime: 60, group: 'F', stops: [] },
+        { maxTime: 72, group: 'G', stops: [] },
+        { maxTime: 84, group: 'G', stops: [{ depth: 3, min: 4 }] }
+    ],
+    18: [
+        { maxTime: 15, group: 'C', stops: [] },
+        { maxTime: 25, group: 'D', stops: [] },
+        { maxTime: 35, group: 'E', stops: [] },
+        { maxTime: 45, group: 'F', stops: [] },
+        { maxTime: 55, group: 'F', stops: [{ depth: 3, min: 4 }] },
+        { maxTime: 65, group: 'G', stops: [{ depth: 3, min: 8 }] },
+        { maxTime: 75, group: 'G', stops: [{ depth: 3, min: 14 }] }
+    ],
+    21: [
+        { maxTime: 11, group: 'C', stops: [] },
+        { maxTime: 16, group: 'D', stops: [] },
+        { maxTime: 21, group: 'D', stops: [] },
+        { maxTime: 26, group: 'E', stops: [] },
+        { maxTime: 31, group: 'E', stops: [] },
+        { maxTime: 36, group: 'F', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 41, group: 'F', stops: [{ depth: 3, min: 5 }] },
+        { maxTime: 46, group: 'F', stops: [{ depth: 3, min: 7 }] },
+        { maxTime: 51, group: 'G', stops: [{ depth: 3, min: 10 }] },
+        { maxTime: 56, group: 'G', stops: [{ depth: 3, min: 13 }] },
+        { maxTime: 61, group: 'G', stops: [{ depth: 3, min: 17 }] }
+    ],
+    24: [
+        { maxTime: 7,  group: 'B', stops: [] },
+        { maxTime: 11, group: 'C', stops: [] },
+        { maxTime: 15, group: 'C', stops: [] },
+        { maxTime: 19, group: 'D', stops: [] },
+        { maxTime: 23, group: 'E', stops: [] },
+        { maxTime: 27, group: 'E', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 31, group: 'F', stops: [{ depth: 3, min: 4 }] },
+        { maxTime: 35, group: 'F', stops: [{ depth: 3, min: 7 }] },
+        { maxTime: 39, group: 'F', stops: [{ depth: 3, min: 9 }] },
+        { maxTime: 43, group: 'G', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 12 }] },
+        { maxTime: 47, group: 'G', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 14 }] },
+        { maxTime: 51, group: 'G', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 17 }] },
+        { maxTime: 55, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 19 }] }
+    ],
+    27: [
+        { maxTime: 6,  group: 'B', stops: [] },
+        { maxTime: 10, group: 'C', stops: [] },
+        { maxTime: 14, group: 'D', stops: [] },
+        { maxTime: 18, group: 'E', stops: [] },
+        { maxTime: 22, group: 'E', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 26, group: 'F', stops: [{ depth: 3, min: 5 }] },
+        { maxTime: 30, group: 'F', stops: [{ depth: 3, min: 8 }] },
+        { maxTime: 34, group: 'G', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 10 }] },
+        { maxTime: 38, group: 'G', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 13 }] },
+        { maxTime: 42, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 15 }] },
+        { maxTime: 46, group: 'G', stops: [{ depth: 6, min: 7 }, { depth: 3, min: 18 }] },
+        { maxTime: 50, group: 'G', stops: [{ depth: 6, min: 9 }, { depth: 3, min: 21 }] }
+    ],
+    30: [
+        { maxTime: 6,  group: 'B', stops: [] },
+        { maxTime: 9,  group: 'C', stops: [] },
+        { maxTime: 12, group: 'D', stops: [] },
+        { maxTime: 15, group: 'D', stops: [] },
+        { maxTime: 18, group: 'E', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 21, group: 'E', stops: [{ depth: 3, min: 4 }] },
+        { maxTime: 24, group: 'F', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 6 }] },
+        { maxTime: 27, group: 'F', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 8 }] },
+        { maxTime: 30, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 10 }] },
+        { maxTime: 33, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 12 }] },
+        { maxTime: 36, group: 'G', stops: [{ depth: 6, min: 6 }, { depth: 3, min: 15 }] },
+        { maxTime: 39, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 7 }, { depth: 3, min: 17 }] },
+        { maxTime: 42, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 9 }, { depth: 3, min: 19 }] }
+    ],
+    33: [
+        { maxTime: 6,  group: 'C', stops: [] },
+        { maxTime: 9,  group: 'D', stops: [] },
+        { maxTime: 12, group: 'D', stops: [] },
+        { maxTime: 15, group: 'E', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 18, group: 'E', stops: [{ depth: 3, min: 5 }] },
+        { maxTime: 21, group: 'F', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 7 }] },
+        { maxTime: 24, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 8 }] },
+        { maxTime: 27, group: 'F', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 10 }] },
+        { maxTime: 30, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 5 }, { depth: 3, min: 13 }] },
+        { maxTime: 33, group: 'G', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] },
+        { maxTime: 36, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 8 }, { depth: 3, min: 18 }] }
+    ],
     36: [
-        { maxTime: 10, stops: [] },
-        { maxTime: 15, stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 20, stops: [{ depth: 3, min: 6 }] },
-        { maxTime: 25, stops: [{ depth: 6, min: 3 }, { depth: 3, min: 9 }] },
-        { maxTime: 30, stops: [{ depth: 6, min: 6 }, { depth: 3, min: 14 }] },
-        { maxTime: 40, stops: [{ depth: 9, min: 3 }, { depth: 6, min: 13 }, { depth: 3, min: 27 }] },
-        { maxTime: 999, stops: [{ depth: 9, min: 8 }, { depth: 6, min: 18 }, { depth: 3, min: 35 }] }
+        { maxTime: 6,  group: 'C', stops: [] },
+        { maxTime: 10, group: 'C', stops: [] },
+        { maxTime: 14, group: 'E', stops: [{ depth: 3, min: 3 }] },
+        { maxTime: 18, group: 'F', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
+        { maxTime: 21, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 8 }] },
+        { maxTime: 24, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 4 }, { depth: 3, min: 11 }] },
+        { maxTime: 27, group: 'G', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
+        { maxTime: 30, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 7 }, { depth: 3, min: 16 }] },
+        { maxTime: 33, group: 'G', stops: [{ depth: 9, min: 4 }, { depth: 6, min: 9 }, { depth: 3, min: 19 }] }
     ],
-    39: [ { maxTime: 5, stops: [] }, { maxTime: 15, stops: [{ depth: 3, min: 5 }] }, { maxTime: 25, stops: [{ depth: 6, min: 5 }, { depth: 3, min: 15 }] }, { maxTime: 999, stops: [{ depth: 12, min: 5 }, { depth: 9, min: 10 }, { depth: 6, min: 20 }, { depth: 3, min: 40 }] } ],
+    39: [
+        { maxTime: 6,  group: 'C', stops: [] },
+        { maxTime: 9,  group: 'D', stops: [] },
+        { maxTime: 12, group: 'E', stops: [{ depth: 3, min: 3 }] },
+        { maxTime: 15, group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 5 }] },
+        { maxTime: 18, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 7 }] },
+        { maxTime: 21, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 5 }, { depth: 3, min: 9 }] },
+        { maxTime: 24, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 13 }] },
+        { maxTime: 27, group: 'G', stops: [{ depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 16 }] }
+    ],
     42: [
-        { maxTime: 5, stops: [] },
-        { maxTime: 10, stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 15, stops: [{ depth: 6, min: 1 }, { depth: 3, min: 7 }] },
-        { maxTime: 20, stops: [{ depth: 6, min: 4 }, { depth: 3, min: 11 }] },
-        { maxTime: 25, stops: [{ depth: 6, min: 7 }, { depth: 3, min: 18 }] },
-        { maxTime: 30, stops: [{ depth: 9, min: 3 }, { depth: 6, min: 12 }, { depth: 3, min: 24 }] },
-        { maxTime: 999, stops: [{ depth: 12, min: 8 }, { depth: 9, min: 14 }, { depth: 6, min: 25 }, { depth: 3, min: 45 }] }
+        { maxTime: 4,  group: 'C', stops: [] },
+        { maxTime: 7,  group: 'C', stops: [] },
+        { maxTime: 10, group: 'E', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 13, group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 5 }] },
+        { maxTime: 16, group: 'F', stops: [{ depth: 6, min: 4 }, { depth: 3, min: 6 }] },
+        { maxTime: 19, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 10 }] },
+        { maxTime: 22, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
+        { maxTime: 25, group: 'G', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 4 }, { depth: 6, min: 8 }, { depth: 3, min: 16 }] }
+    ],
+    45: [
+        { maxTime: 6,  group: 'D', stops: [] },
+        { maxTime: 8,  group: 'D', stops: [{ depth: 3, min: 1 }] },
+        { maxTime: 10, group: 'E', stops: [{ depth: 3, min: 3 }] },
+        { maxTime: 12, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 4 }] },
+        { maxTime: 14, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
+        { maxTime: 16, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 9 }] },
+        { maxTime: 18, group: 'F', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 10 }] },
+        { maxTime: 20, group: 'G', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
+        { maxTime: 22, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] }
+    ],
+    48: [
+        { maxTime: 5,  group: 'C', stops: [] },
+        { maxTime: 7,  group: 'D', stops: [{ depth: 3, min: 1 }] },
+        { maxTime: 9,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
+        { maxTime: 11, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
+        { maxTime: 13, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
+        { maxTime: 15, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
+        { maxTime: 17, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 11 }] },
+        { maxTime: 19, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] },
+        { maxTime: 21, group: 'G', stops: [{ depth: 12, min: 3 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 17 }] }
+    ],
+    51: [
+        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 1 }] },
+        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
+        { maxTime: 10, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
+        { maxTime: 12, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 7 }] },
+        { maxTime: 14, group: 'F', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
+        { maxTime: 16, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 11 }] },
+        { maxTime: 18, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 14 }] }
+    ],
+    54: [
+        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 2 }] },
+        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 4 }] },
+        { maxTime: 10, group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 2 }, { depth: 3, min: 6 }] },
+        { maxTime: 12, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 7 }] },
+        { maxTime: 14, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 10 }] },
+        { maxTime: 16, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] }
+    ],
+    57: [
+        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 3 }] },
+        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 4 }] },
+        { maxTime: 10, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
+        { maxTime: 12, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
+        { maxTime: 14, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 12 }] },
+        { maxTime: 16, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 3 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] }
+    ],
+    60: [
+        { maxTime: 6,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
+        { maxTime: 8,  group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 2 }, { depth: 3, min: 5 }] },
+        { maxTime: 10, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 7 }] },
+        { maxTime: 12, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 11 }] },
+        { maxTime: 13, group: 'F', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 12 }] },
+        { maxTime: 14, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] }
+    ],
+    63: [
+        { maxTime: 6,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 4 }] },
+        { maxTime: 8,  group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
+        { maxTime: 10, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
+        { maxTime: 11, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 10 }] },
+        { maxTime: 12, group: 'F', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 12 }] },
+        { maxTime: 13, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] }
     ]
 };
 
 const deco2000NdlTable = [
-    { depth: 10, ndl: 120 }, { depth: 12, ndl: 75 }, { depth: 15, ndl: 50 },
-    { depth: 18, ndl: 35 },  { depth: 21, ndl: 25 }, { depth: 24, ndl: 20 },
-    { depth: 27, ndl: 20 },  { depth: 30, ndl: 15 }, { depth: 33, ndl: 10 },
-    { depth: 36, ndl: 10 },  { depth: 39, ndl: 5 },  { depth: 42, ndl: 5 }
+    { depth: 12, ndl: 140 },
+    { depth: 15, ndl: 72 },
+    { depth: 18, ndl: 45 },
+    { depth: 21, ndl: 31 },
+    { depth: 24, ndl: 23 },
+    { depth: 27, ndl: 18 },
+    { depth: 30, ndl: 15 },
+    { depth: 33, ndl: 12 },
+    { depth: 36, ndl: 10 },
+    { depth: 39, ndl: 9 },
+    { depth: 42, ndl: 7 },
+    { depth: 45, ndl: 6 },
+    { depth: 48, ndl: 5 },
+    { depth: 51, ndl: 5 },
+    { depth: 54, ndl: 4 },
+    { depth: 57, ndl: 3 },
+    { depth: 60, ndl: 3 },
+    { depth: 63, ndl: 2 }
 ];
 
-const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
+const pauseMatrix = {
+    'G': [{ min: 120, g: 'F' }, { min: 180, g: 'E' }, { min: 240, g: 'D' }, { min: 300, g: 'C' }, { min: 360, g: 'B' }, { min: 420, g: 'A' }, { min: 1440, g: '-' }],
+    'F': [{ min: 30,  g: 'E' }, { min: 60,  g: 'D' }, { min: 90,  g: 'C' }, { min: 135, g: 'B' }, { min: 180, g: 'A' }, { min: 1200, g: '-' }],
+    'E': [{ min: 30,  g: 'D' }, { min: 60,  g: 'C' }, { min: 90,  g: 'B' }, { min: 120, g: 'A' }, { min: 960,  g: '-' }],
+    'D': [{ min: 30,  g: 'C' }, { min: 45,  g: 'B' }, { min: 60,  g: 'A' }, { min: 720, g: '-' }],
+    'C': [{ min: 10,  g: 'B' }, { min: 20,  g: 'A' }, { min: 480, g: '-' }],
+    'B': [{ min: 10,  g: 'A' }, { min: 240, g: '-' }],
+    'A': [{ min: 1,   g: '-' }]
+};
+
+const penaltyMatrix = {
+    12: [66, 60, 54, 47, 41, 35, 30, 25, 20],
+    15: [52, 47, 42, 37, 32, 27, 23, 19, 16],
+    18: [43, 39, 34, 30, 26, 22, 19, 16, 13],
+    21: [36, 33, 29, 26, 22, 19, 16, 13, 11],
+    24: [31, 28, 25, 22, 19, 16, 14, 12, 10],
+    27: [27, 25, 22, 19, 17, 14, 12, 10, 8],
+    30: [24, 22, 20, 17, 15, 13, 11, 9, 8],
+    33: [22, 20, 18, 16, 14, 12, 10, 8, 7],
+    36: [20, 18, 16, 14, 12, 11, 9, 7, 6],
+    39: [18, 17, 15, 13, 11, 10, 8, 7, 6],
+    42: [17, 15, 14, 12, 10, 9, 8, 6, 5],
+    45: [16, 14, 13, 11, 10, 8, 7, 6, 5],
+    48: [15, 13, 12, 10, 9, 8, 6, 5, 4],
+    51: [14, 12, 11, 10, 8, 7, 6, 5, 4],
+    54: [13, 12, 10, 9, 8, 7, 6, 5, 4],
+    57: [12, 11, 10, 9, 7, 6, 5, 5, 4],
+    60: [11, 10, 9, 8, 7, 6, 5, 4, 3],
+    63: [11, 10, 9, 8, 7, 6, 5, 4, 3]
+};
+
+const groupsOrder = ['G', 'F', 'E', 'D', 'C', 'B', 'A'];
 let tg1WasDekoDive = false;
 
 const allInputs = [
@@ -285,47 +487,84 @@ function saveSettings() {
     });
 }
 
+function getTargetDepth(depth) {
+    let exactDepths = Object.keys(deco2000ExactTable).map(Number).sort((a,b) => a-b);
+    return exactDepths.find(d => depth <= d) || null;
+}
+
 function getNDL(depth) {
-    if (depth > 42) return -1; 
-    if (depth <= 9) return 120;
-    let entry = deco2000NdlTable.find(e => depth <= e.depth);
-    return entry ? entry.ndl : 5;
+    if (depth > 63) return -1;
+    if (depth <= 9) return 999;
+    let targetD = getTargetDepth(depth);
+    if (!targetD) return -1;
+    let entry = deco2000NdlTable.find(e => targetD <= e.depth);
+    return entry ? entry.ndl : -1;
+}
+
+function lookupExactProfile(depth, time) {
+    if (depth <= 0 || time <= 0) return null;
+    let targetD = getTargetDepth(depth);
+    if (!targetD) return null;
+    
+    let profiles = deco2000ExactTable[targetD];
+    if (!profiles) return null;
+    
+    let profile = profiles.find(p => time <= p.maxTime);
+    
+    let ndl = getNDL(depth);
+    if (!profile && time <= ndl) {
+        return { maxTime: time, group: '-', stops: [] };
+    }
+    
+    return profile || null;
 }
 
 function getWiederholergruppe(depth, time) {
-    if (time <= 0 || depth <= 0 || depth > 42) return '-';
-    let factor = depth * Math.sqrt(time) * 1.15;
-    let idx = Math.floor(factor / 18);
-    if (idx >= groups.length) idx = groups.length - 1;
-    if (idx < 0) idx = 0;
-    return groups[idx];
+    if (depth <= 0 || time <= 0) return '-';
+    let targetD = getTargetDepth(depth);
+    if (!targetD) return '-';
+    
+    let profiles = deco2000ExactTable[targetD];
+    if (!profiles) return '-';
+
+    let profile = profiles.find(p => time <= p.maxTime);
+    
+    if (!profile) {
+        let ndl = getNDL(depth);
+        if (time <= ndl) return '-';
+        return '-';
+    }
+    
+    return profile.group;
 }
 
 function getGruppeNachPause(startGruppe, pauseMinuten) {
-    if (startGruppe === '-' || pauseMinuten <= 0) return startGruppe;
-    let startIdx = groups.indexOf(startGruppe);
-    if (startIdx === -1) return '-';
-    let stufenAbbau = Math.floor(pauseMinuten / 45); 
-    let neuerIdx = startIdx - stufenAbbau;
-    if (neuerIdx < 0) neuerIdx = 0;
-    return groups[neuerIdx];
+    if (!startGruppe || startGruppe === '-' || pauseMinuten <= 0) return startGruppe;
+    let steps = pauseMatrix[startGruppe];
+    if (!steps) return startGruppe;
+    
+    let currentG = startGruppe;
+    for (let step of steps) {
+        if (pauseMinuten >= step.min) {
+            currentG = step.g;
+        } else {
+            break;
+        }
+    }
+    return currentG;
 }
 
 function getVdstZeitzuschlag(gruppe, tiefe) {
-    if (gruppe === '-' || tiefe <= 0 || tiefe > 42) return 0;
-    let gIdx = groups.indexOf(gruppe) + 1;
-    let zuschlag = Math.ceil((gIdx * 5.0) * (tiefe / 12)); 
-    return Math.min(zuschlag, 90);
-}
-
-function lookupDecoStops(depth, time) {
-    let exactDepths = Object.keys(deco2000Matrix).map(Number).sort((a,b) => a-b);
-    let matchedDepth = exactDepths.find(d => depth <= d);
-    if (!matchedDepth || !deco2000Matrix[matchedDepth]) return null;
-    let profiles = deco2000Matrix[matchedDepth];
-    let matchedProfile = profiles.find(p => time <= p.maxTime);
-    if (!matchedProfile) return profiles[profiles.length - 1].stops;
-    return matchedProfile.stops;
+    if (!gruppe || gruppe === '-' || tiefe <= 0 || tiefe > 63) return 0;
+    let targetD = getTargetDepth(tiefe);
+    if (!targetD) return 0;
+    if (targetD < 12) targetD = 12;
+    
+    let row = penaltyMatrix[targetD];
+    let colIdx = groupsOrder.indexOf(gruppe);
+    if (!row || colIdx === -1) return 0;
+    
+    return row[colIdx];
 }
 
 function calculateAMV() {
@@ -338,9 +577,7 @@ function calculateAMV() {
     
     if (amv > 0 && isFinite(amv)) {
         document.getElementById('amv_result').innerText = amv.toFixed(1) + " L/min";
-        // Automatische Übernahme in die Planer-Basis
-        const tgAmvInput = document.getElementById('tg_amv');
-        tgAmvInput.value = amv.toFixed(1);
+        document.getElementById('tg_amv').value = amv.toFixed(1);
         saveSettings();
     }
 }
@@ -357,12 +594,15 @@ function calculateDives() {
     const tg2Depth = parseFloat(document.getElementById('tg2_depth').value) || 0;
     const tg2Time = parseFloat(document.getElementById('tg2_time').value) || 0;
 
+    // --- TG 1 ---
     const ndl1 = getNDL(tg1Depth);
-    if (ndl1 === -1 || tg1Depth > 42) {
-        invalidateOutput('tg1_ndl', 'tg1_group', 'tg1_air_needed', 'tg1_air_left', 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', "⚠️ >42m!");
+    const profile1 = lookupExactProfile(tg1Depth, tg1Time);
+
+    if (ndl1 === -1 || tg1Depth > 63 || (tg1Time > 0 && !profile1)) {
+        invalidateOutput('tg1_ndl', 'tg1_group', 'tg1_air_needed', 'tg1_air_left', 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', "⚠️ Außerhalb der Tabelle!");
         tg1WasDekoDive = false;
     } else {
-        document.getElementById('tg1_ndl').innerText = ndl1 + " Min";
+        document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " Min";
         const tg1Group = getWiederholergruppe(tg1Depth, tg1Time);
         document.getElementById('tg1_group').innerText = tg1Group;
 
@@ -376,32 +616,32 @@ function calculateDives() {
         handleStoppsAndStatus(tg1Time, ndl1, tg1Depth, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, tg1Time);
     }
 
+    // --- TG 2 ---
     const ndl2 = getNDL(tg2Depth);
-    if (ndl2 === -1 || tg2Depth > 42) {
-        invalidateOutput('tg2_start_group', 'tg2_penalty', 'tg2_eff_time', 'tg2_ndl', 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', "⚠️ >42m!");
-        return;
-    }
-
-    const tg1GroupText = (ndl1 !== -1 && tg1Depth <= 42) ? getWiederholergruppe(tg1Depth, tg1Time) : '-';
+    const tg1GroupText = (ndl1 !== -1 && tg1Depth <= 63 && profile1) ? getWiederholergruppe(tg1Depth, tg1Time) : '-';
     const tg2StartGroup = getGruppeNachPause(tg1GroupText, surfaceInterval);
-    document.getElementById('tg2_start_group').innerText = tg2StartGroup;
-
     const penaltyTime = getVdstZeitzuschlag(tg2StartGroup, tg2Depth);
-    document.getElementById('tg2_penalty').innerText = "+" + penaltyTime + "m";
-
     const effectiveTime2 = tg2Time + penaltyTime;
-    document.getElementById('tg2_eff_time').innerText = effectiveTime2 + "m";
+    const profile2 = lookupExactProfile(tg2Depth, effectiveTime2);
 
-    const remainingNdl2 = Math.max(0, ndl2 - penaltyTime);
-    document.getElementById('tg2_ndl').innerText = remainingNdl2 + "m";
+    if (ndl2 === -1 || tg2Depth > 63 || (tg2Time > 0 && !profile2)) {
+        invalidateOutput('tg2_start_group', 'tg2_penalty', 'tg2_eff_time', 'tg2_ndl', 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', "⚠️ Außerhalb der Tabelle!");
+    } else {
+        document.getElementById('tg2_start_group').innerText = tg2StartGroup;
+        document.getElementById('tg2_penalty').innerText = "+" + penaltyTime + "m";
+        document.getElementById('tg2_eff_time').innerText = effectiveTime2 + "m";
 
-    const pAmb2 = 1 + (tg2Depth / 10);
-    const barCons2 = (amv * pAmb2 * tg2Time) / tank;
-    const endBar2 = startBar - barCons2;
-    document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + "b";
-    document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + "b";
+        const remainingNdl2 = Math.max(0, ndl2 - penaltyTime);
+        document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : remainingNdl2 + "m";
 
-    handleStoppsAndStatus(effectiveTime2, ndl2, tg2Depth, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, tg2Time);
+        const pAmb2 = 1 + (tg2Depth / 10);
+        const barCons2 = (amv * pAmb2 * tg2Time) / tank;
+        const endBar2 = startBar - barCons2;
+        document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + "b";
+        document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + "b";
+
+        handleStoppsAndStatus(effectiveTime2, ndl2, tg2Depth, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, tg2Time);
+    }
 }
 
 function invalidateOutput(i1, i2, i3, i4, totalTimeId, stoppsId, statusId, msg) {
@@ -411,7 +651,7 @@ function invalidateOutput(i1, i2, i3, i4, totalTimeId, stoppsId, statusId, msg) 
     document.getElementById(i4).innerText = "--";
     document.getElementById(totalTimeId).innerText = "--";
     document.getElementById(stoppsId).innerHTML = "";
-    document.getElementById(statusId).innerHTML = `<div class="alert alert-danger">${msg}</div>`;
+    document.getElementById(statusId).innerHTML = `<div class="alert alert-danger" style="background:#8b0000; color:#fff; font-weight:bold; padding:8px; border-radius:4px; text-align:center;">${msg}</div>`;
 }
 
 function handleStoppsAndStatus(calcTime, ndl, depth, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, rawPlannedTime) {
@@ -430,7 +670,8 @@ function handleStoppsAndStatus(calcTime, ndl, depth, totalTimeId, stoppsId, stat
         dekoStoppsSumme = 3;
         stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3m / 3 Min</span></div>`;
     } else {
-        let exactStops = lookupDecoStops(depth, calcTime);
+        let profile = lookupExactProfile(depth, calcTime);
+        let exactStops = (profile && profile.stops) ? profile.stops : [];
         if (exactStops && exactStops.length > 0) {
             stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>⚠️ Dekostopps:</span><span></span></div>`;
             exactStops.forEach(st => {
