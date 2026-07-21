@@ -195,6 +195,7 @@
             <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 1</div>
             <div class="result-item"><span>Nullzeit (NDL):</span><span id="tg1_ndl">--</span></div>
             <div class="result-item"><span>Wiederholer-Gruppe:</span><span id="tg1_group" style="color:var(--primary)">--</span></div>
+            <div class="result-item"><span>✈️ Flugverbot nach TG1:</span><span id="tg1_nofly" style="color:var(--warning); font-weight:bold;">--</span></div>
             <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
             <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg1_total_time">--</span></div>
             <div id="tg1_deko_stopps"></div>
@@ -206,6 +207,7 @@
             <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 2</div>
             <div class="result-item"><span>Gruppe n. Pause / Zuschlag:</span><span><span id="tg2_start_group">--</span> (<span id="tg2_penalty" style="color:var(--danger)">--</span>)</span></div>
             <div class="result-item"><span>Rest-Nullzeit (effektiv):</span><span><span id="tg2_ndl">--</span> (<span id="tg2_eff_time">--</span>)</span></div>
+            <div class="result-item"><span>✈️ Flugverbot nach TG2:</span><span id="tg2_nofly" style="color:var(--warning); font-weight:bold;">--</span></div>
             <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
             <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg2_total_time">--</span></div>
             <div id="tg2_deko_stopps"></div>
@@ -213,14 +215,10 @@
         </div>
     </div>
     
-    <p class="note">von Papa für Max ;-)</p>
+    <p class="note">von Papa für Max ;-  Version 1.5  21.07.2026</p>
 </div>
 
 <script>
-// =========================================================================
-// EXAKTE DECO 2000 DATEN (0 - 700 m ü. N.N., Aufstieg 10 m/min)
-// VDST Austauchtabelle (Autor: Dr. Max Hahn) - Exakt laut Plastikkarte
-// =========================================================================
 
 const deco2000ExactTable = {
     12: [
@@ -414,58 +412,72 @@ const deco2000ExactTable = {
 };
 
 const deco2000NdlTable = [
-    { depth: 12, ndl: 140 },
-    { depth: 15, ndl: 72 },
-    { depth: 18, ndl: 45 },
-    { depth: 21, ndl: 31 },
-    { depth: 24, ndl: 23 },
-    { depth: 27, ndl: 18 },
-    { depth: 30, ndl: 15 },
-    { depth: 33, ndl: 12 },
-    { depth: 36, ndl: 10 },
-    { depth: 39, ndl: 9 },
-    { depth: 42, ndl: 7 },
-    { depth: 45, ndl: 6 },
-    { depth: 48, ndl: 5 },
-    { depth: 51, ndl: 5 },
-    { depth: 54, ndl: 4 },
-    { depth: 57, ndl: 3 },
-    { depth: 60, ndl: 3 },
-    { depth: 63, ndl: 2 }
+    { depth: 12, ndl: 140 }, { depth: 15, ndl: 72 }, { depth: 18, ndl: 45 },
+    { depth: 21, ndl: 31 },  { depth: 24, ndl: 23 }, { depth: 27, ndl: 18 },
+    { depth: 30, ndl: 15 },  { depth: 33, ndl: 12 }, { depth: 36, ndl: 10 },
+    { depth: 39, ndl: 9 },   { depth: 42, ndl: 7 },  { depth: 45, ndl: 6 },
+    { depth: 48, ndl: 5 },   { depth: 51, ndl: 5 },  { depth: 54, ndl: 4 },
+    { depth: 57, ndl: 3 },   { depth: 60, ndl: 3 },  { depth: 63, ndl: 2 }
 ];
 
 const pauseMatrix = {
-    'G': [{ min: 120, g: 'F' }, { min: 180, g: 'E' }, { min: 240, g: 'D' }, { min: 300, g: 'C' }, { min: 360, g: 'B' }, { min: 420, g: 'A' }, { min: 1440, g: '-' }],
-    'F': [{ min: 30,  g: 'E' }, { min: 60,  g: 'D' }, { min: 90,  g: 'C' }, { min: 135, g: 'B' }, { min: 180, g: 'A' }, { min: 1200, g: '-' }],
-    'E': [{ min: 30,  g: 'D' }, { min: 60,  g: 'C' }, { min: 90,  g: 'B' }, { min: 120, g: 'A' }, { min: 960,  g: '-' }],
-    'D': [{ min: 30,  g: 'C' }, { min: 45,  g: 'B' }, { min: 60,  g: 'A' }, { min: 720, g: '-' }],
-    'C': [{ min: 10,  g: 'B' }, { min: 20,  g: 'A' }, { min: 480, g: '-' }],
-    'B': [{ min: 10,  g: 'A' }, { min: 240, g: '-' }],
-    'A': [{ min: 1,   g: '-' }]
+    'G': [
+        { min: 720, g: 'A' }, { min: 600, g: 'B' }, { min: 540, g: 'C' },
+        { min: 480, g: 'D' }, { min: 420, g: 'E' }, { min: 360, g: 'F' },
+        { min: 120, g: 'G' }, { min: 0,   g: 'G' }
+    ],
+    'F': [
+        { min: 600, g: 'A' }, { min: 390, g: 'B' }, { min: 330, g: 'C' },
+        { min: 270, g: 'D' }, { min: 225, g: 'E' }, { min: 30,  g: 'F' },
+        { min: 0,   g: 'F' }
+    ],
+    'E': [
+        { min: 480, g: 'A' }, { min: 210, g: 'B' }, { min: 180, g: 'C' },
+        { min: 150, g: 'D' }, { min: 30,  g: 'E' }, { min: 0,   g: 'E' }
+    ],
+    'D': [
+        { min: 360, g: 'A' }, { min: 120, g: 'B' }, { min: 90,  g: 'C' },
+        { min: 30,  g: 'D' }, { min: 0,   g: 'D' }
+    ],
+    'C': [
+        { min: 240, g: 'A' }, { min: 30,  g: 'B' }, { min: 0,   g: 'C' }
+    ],
+    'B': [
+        { min: 120, g: 'A' }, { min: 0,   g: 'B' }
+    ]
 };
 
 const penaltyMatrix = {
-    12: [66, 60, 54, 47, 41, 35, 30, 25, 20],
-    15: [52, 47, 42, 37, 32, 27, 23, 19, 16],
-    18: [43, 39, 34, 30, 26, 22, 19, 16, 13],
-    21: [36, 33, 29, 26, 22, 19, 16, 13, 11],
-    24: [31, 28, 25, 22, 19, 16, 14, 12, 10],
-    27: [27, 25, 22, 19, 17, 14, 12, 10, 8],
-    30: [24, 22, 20, 17, 15, 13, 11, 9, 8],
-    33: [22, 20, 18, 16, 14, 12, 10, 8, 7],
-    36: [20, 18, 16, 14, 12, 11, 9, 7, 6],
-    39: [18, 17, 15, 13, 11, 10, 8, 7, 6],
-    42: [17, 15, 14, 12, 10, 9, 8, 6, 5],
-    45: [16, 14, 13, 11, 10, 8, 7, 6, 5],
-    48: [15, 13, 12, 10, 9, 8, 6, 5, 4],
-    51: [14, 12, 11, 10, 8, 7, 6, 5, 4],
-    54: [13, 12, 10, 9, 8, 7, 6, 5, 4],
-    57: [12, 11, 10, 9, 7, 6, 5, 5, 4],
-    60: [11, 10, 9, 8, 7, 6, 5, 4, 3],
-    63: [11, 10, 9, 8, 7, 6, 5, 4, 3]
+    12: { 'G': 66, 'F': 60, 'E': 54, 'D': 47, 'C': 41, 'B': 35, 'A': 30 },
+    15: { 'G': 52, 'F': 47, 'E': 42, 'D': 37, 'C': 32, 'B': 27, 'A': 23 },
+    18: { 'G': 43, 'F': 39, 'E': 34, 'D': 30, 'C': 26, 'B': 22, 'A': 19 },
+    21: { 'G': 36, 'F': 33, 'E': 29, 'D': 26, 'C': 22, 'B': 19, 'A': 16 },
+    24: { 'G': 31, 'F': 28, 'E': 25, 'D': 22, 'C': 19, 'B': 16, 'A': 14 },
+    27: { 'G': 27, 'F': 25, 'E': 22, 'D': 19, 'C': 17, 'B': 14, 'A': 12 },
+    30: { 'G': 24, 'F': 22, 'E': 20, 'D': 17, 'C': 15, 'B': 13, 'A': 11 },
+    33: { 'G': 22, 'F': 20, 'E': 18, 'D': 16, 'C': 14, 'B': 12, 'A': 10 },
+    36: { 'G': 20, 'F': 18, 'E': 16, 'D': 14, 'C': 12, 'B': 11, 'A': 9  },
+    39: { 'G': 18, 'F': 17, 'E': 15, 'D': 13, 'C': 11, 'B': 10, 'A': 8  },
+    42: { 'G': 17, 'F': 15, 'E': 14, 'D': 12, 'C': 10, 'B': 9,  'A': 8  },
+    45: { 'G': 16, 'F': 14, 'E': 13, 'D': 11, 'C': 10, 'B': 8,  'A': 7  },
+    48: { 'G': 15, 'F': 13, 'E': 12, 'D': 10, 'C': 9,  'B': 8,  'A': 6  },
+    51: { 'G': 14, 'F': 12, 'E': 11, 'D': 10, 'C': 8,  'B': 7,  'A': 6  },
+    54: { 'G': 13, 'F': 12, 'E': 10, 'D': 9,  'C': 8,  'B': 7,  'A': 6  },
+    57: { 'G': 12, 'F': 11, 'E': 10, 'D': 9,  'C': 7,  'B': 6,  'A': 5  },
+    60: { 'G': 11, 'F': 10, 'E': 9,  'D': 8,  'C': 7,  'B': 6,  'A': 5  },
+    63: { 'G': 11, 'F': 10, 'E': 9,  'D': 8,  'C': 7,  'B': 6,  'A': 5  }
 };
 
-const groupsOrder = ['G', 'F', 'E', 'D', 'C', 'B', 'A'];
+const noFlyTable = {
+    'G': 24,
+    'F': 20,
+    'E': 16,
+    'D': 12,
+    'C': 8,
+    'B': 4,
+    'A': 0
+};
+
 let tg1WasDekoDive = false;
 
 const allInputs = [
@@ -510,7 +522,6 @@ function lookupExactProfile(depth, time) {
     if (!profiles) return null;
     
     let profile = profiles.find(p => time <= p.maxTime);
-    
     let ndl = getNDL(depth);
     if (!profile && time <= ndl) {
         return { maxTime: time, group: '-', stops: [] };
@@ -528,43 +539,21 @@ function getWiederholergruppe(depth, time) {
     if (!profiles) return '-';
 
     let profile = profiles.find(p => time <= p.maxTime);
-    
-    if (!profile) {
-        let ndl = getNDL(depth);
-        if (time <= ndl) return '-';
-        return '-';
-    }
-    
-    return profile.group;
+    return profile ? profile.group : '-';
 }
 
 function getGruppeNachPause(startGruppe, pauseMinuten) {
-    if (!startGruppe || startGruppe === '-' || pauseMinuten <= 0) return startGruppe;
-    let steps = pauseMatrix[startGruppe];
-    if (!steps) return startGruppe;
-    
-    let currentG = startGruppe;
-    for (let step of steps) {
-        if (pauseMinuten >= step.min) {
-            currentG = step.g;
-        } else {
-            break;
-        }
-    }
-    return currentG;
+    if (!startGruppe || startGruppe === '-' || pauseMinuten < 0 || !pauseMatrix[startGruppe]) return startGruppe;
+    const entry = pauseMatrix[startGruppe].find(e => pauseMinuten >= e.min);
+    return entry ? entry.g : startGruppe;
 }
 
 function getVdstZeitzuschlag(gruppe, tiefe) {
     if (!gruppe || gruppe === '-' || tiefe <= 0 || tiefe > 63) return 0;
-    let targetD = getTargetDepth(tiefe);
-    if (!targetD) return 0;
-    if (targetD < 12) targetD = 12;
-    
-    let row = penaltyMatrix[targetD];
-    let colIdx = groupsOrder.indexOf(gruppe);
-    if (!row || colIdx === -1) return 0;
-    
-    return row[colIdx];
+    const availableDepths = Object.keys(penaltyMatrix).map(Number).sort((a, b) => a - b);
+    const matchedDepth = availableDepths.find(d => tiefe <= d);
+    if (!matchedDepth || !penaltyMatrix[matchedDepth]) return 0;
+    return penaltyMatrix[matchedDepth][gruppe] || 0;
 }
 
 function calculateAMV() {
@@ -599,12 +588,15 @@ function calculateDives() {
     const profile1 = lookupExactProfile(tg1Depth, tg1Time);
 
     if (ndl1 === -1 || tg1Depth > 63 || (tg1Time > 0 && !profile1)) {
-        invalidateOutput('tg1_ndl', 'tg1_group', 'tg1_air_needed', 'tg1_air_left', 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', "⚠️ Außerhalb der Tabelle!");
+        invalidateOutput('tg1_ndl', 'tg1_group', 'tg1_nofly', 'tg1_air_needed', 'tg1_air_left', 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', "⚠️ Außerhalb der Tabelle!");
         tg1WasDekoDive = false;
     } else {
         document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " Min";
         const tg1Group = getWiederholergruppe(tg1Depth, tg1Time);
         document.getElementById('tg1_group').innerText = tg1Group;
+
+        const noFly1 = noFlyTable[tg1Group] || 0;
+        document.getElementById('tg1_nofly').innerText = noFly1 > 0 ? `${noFly1} Std.` : 'Keines';
 
         const pAmb1 = 1 + (tg1Depth / 10);
         const barCons1 = (amv * pAmb1 * tg1Time) / tank;
@@ -625,7 +617,7 @@ function calculateDives() {
     const profile2 = lookupExactProfile(tg2Depth, effectiveTime2);
 
     if (ndl2 === -1 || tg2Depth > 63 || (tg2Time > 0 && !profile2)) {
-        invalidateOutput('tg2_start_group', 'tg2_penalty', 'tg2_eff_time', 'tg2_ndl', 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', "⚠️ Außerhalb der Tabelle!");
+        invalidateOutput('tg2_start_group', 'tg2_penalty', 'tg2_eff_time', 'tg2_ndl', 'tg2_nofly', 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', "⚠️ Außerhalb der Tabelle!");
     } else {
         document.getElementById('tg2_start_group').innerText = tg2StartGroup;
         document.getElementById('tg2_penalty').innerText = "+" + penaltyTime + "m";
@@ -633,6 +625,10 @@ function calculateDives() {
 
         const remainingNdl2 = Math.max(0, ndl2 - penaltyTime);
         document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : remainingNdl2 + "m";
+
+        const tg2FinalGroup = getWiederholergruppe(tg2Depth, effectiveTime2);
+        const noFly2 = noFlyTable[tg2FinalGroup] || 0;
+        document.getElementById('tg2_nofly').innerText = noFly2 > 0 ? `${noFly2} Std.` : 'Keines';
 
         const pAmb2 = 1 + (tg2Depth / 10);
         const barCons2 = (amv * pAmb2 * tg2Time) / tank;
@@ -644,11 +640,12 @@ function calculateDives() {
     }
 }
 
-function invalidateOutput(i1, i2, i3, i4, totalTimeId, stoppsId, statusId, msg) {
+function invalidateOutput(i1, i2, i3, i4, i5, totalTimeId, stoppsId, statusId, msg) {
     document.getElementById(i1).innerText = "--";
     document.getElementById(i2).innerText = "--";
     document.getElementById(i3).innerText = "--";
     document.getElementById(i4).innerText = "--";
+    if (document.getElementById(i5)) document.getElementById(i5).innerText = "--";
     document.getElementById(totalTimeId).innerText = "--";
     document.getElementById(stoppsId).innerHTML = "";
     document.getElementById(statusId).innerHTML = `<div class="alert alert-danger" style="background:#8b0000; color:#fff; font-weight:bold; padding:8px; border-radius:4px; text-align:center;">${msg}</div>`;
