@@ -14,7 +14,23 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="icon-192.png">
     
+	<script>
+      // Service Worker Registrierung
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .catch(err => console.log('SW Fehler:', err));
+        });
+      }
+    </script>
+			
     <style>
+
+/* Fix für PWA-Ränder und den blauen Balken */
+        html {background-color: #000000 !important;
+              overscroll-behavior-y: none;
+        }
+
         :root {
             --primary: #0284c7;
             --bg: #0f172a;
