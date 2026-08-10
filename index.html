@@ -504,7 +504,7 @@ function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, en
     if (endBar < reserve) {
         statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten (${Math.floor(endBar)} bar)!</div>`;
     } else if (isTG2 && tg1WasDeko) {
-        statusHtml = `<div class="alert alert-danger">Achtung Tauchgang 1 war Dekotauchgang!</div>`;
+        statusHtml = `<div class="alert alert-danger">⚠️ Tauchgang 1 war DEKO-Tauchgang!</div>`;
     } else if (stops.length > 0) {
         statusHtml = `<div class="alert alert-warning">⚠️ DEKO-Tauchgang!</div>`;
     } else {
