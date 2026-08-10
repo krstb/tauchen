@@ -489,11 +489,11 @@ function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, en
 
     if (stops.length === 0) {
         dekoStoppsSumme = 3;
-        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3 m / 2 min</span></div>`;
+        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3 m / 3 min</span></div>`;
     } else {
         stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>⚠️ Dekostopps:</span><span></span></div>`;
         stops.forEach(st => {
-            stoppsHtml += `<div class="result-item"><span>${st.depth} m Stopp:</span> <span>${st.min} min</span></div>`;
+            stoppsHtml += `<div class="result-item"><span>${st.depth} m </span> <span>${st.min} min</span></div>`;
             dekoStoppsSumme += st.min;
         });
     }
