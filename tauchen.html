@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tauchgangs-Planer (Bühlmann ZH-L16C)</title>
+  
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png"> 
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="light">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .catch(err => console.log('SW Fehler:', err));
+        });
+      }
+    </script>
+			
+    <style>
+        html {
+            background-color: #000000 !important;
+            overscroll-behavior-y: none;
+        }
+
+        :root {
+            --primary: #0284c7;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 4px;
+            font-size: 0.85rem;
+            line-height: 1.25;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin: 4px 0 2px 0;
+            font-size: 1.4rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            padding: 3px 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: #0f172a;
+            color: var(--text);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: 1px solid var(--primary);
+        }
+
+        .results {
+            margin-top: 4px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 0;
+            border-bottom: 1px solid #1e293b;
+            font-size: 0.8rem;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert {
+            padding: 4px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .alert-warning { background-color: #78350f; color: #fde68a; border: 1px solid #92400e; }
+        .alert-danger { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
+        .alert-success { background-color: #064e3b; color: #bbf7d0; border: 1px solid #065f46; }
+        
+        .note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🤿 Tauchgangs-Planer (Bühlmann ZH-L16C)</h1>
+    <div class="subtitle">Dynamische Gewebeberechnung mit Höhenanpassung</div>
+
+    <!-- AMV RECHNER -->
+    <div class="card">
+        <h2>1. AMV-Ermittlung</h2>
+        <div class="grid">
+		
+		<!-- Default für AMV-Ermittlung (Flasche) -->
+            <div class="form-group"><label for="amv_depth">Ø Tiefe (m):</label><input type="number" id="amv_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="amv_time">Zeit (Min):</label><input type="number" id="amv_time" value="35" min="0" max="240"></div>
+            <div class="form-group"><label for="amv_tank">Flasche (L):</label><input type="number" id="amv_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="amv_bar">Verbrauch (bar):</label><input type="number" id="amv_bar" value="150" min="0" max="300" step="5"></div>
+        </div>
+        <div class="results">
+            <div class="result-item"><span>AMV:</span><span id="amv_result" style="font-weight: bold; color: var(--primary);">-- L/min</span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>2. Kalkulation & Höhe</h2>
+        <div class="grid">
+            <div class="form-group full-width">
+                <label for="altitude_preset" style="color:var(--warning)"> Höhenstufe / Gewässerhöhe (m ü. N.N.):</label>
+                <select id="altitude_preset">
+                    <option value="0">Meereshöhe bis 700 m (Normal / Standard DECO 2000)</option>
+                    <option value="1100">Bergsee: 701 m - 1500 m ü. N.N. (z. B. DECO 2000.1)</option>
+                    <option value="custom">Manuelle Gewässerhöhe eingeben...</option>
+                </select>
+            </div>
+
+            <div class="form-group full-width" id="custom_altitude_group" style="display:none;">
+                <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.):</label>
+                <input type="number" id="custom_altitude" value="1000" min="0" max="5000">
+            </div>
+
+            <div class="form-group"><label for="tg_amv">AMV-Basis:</label><input type="number" id="tg_amv" value="15" min="5" step="0.1"></div>
+            <div class="form-group"><label for="tg_tank">Flasche (L):</label><input type="number" id="tg_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="tg_start_bar">Start (bar):</label><input type="number" id="tg_start_bar" value="200" min="0" max="300"></div>
+            <div class="form-group"><label for="tg_reserve">Reserve (bar):</label><input type="number" id="tg_reserve" value="50" min="50" max="100" step="5"></div>
+
+            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">TG1 Tiefe (m):</label><input type="number" id="tg1_depth" value="20" min="0" max="100"></div>
+            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">TG1 Zeit (Min):</label><input type="number" id="tg1_time" value="20" min="0" max="300"></div>
+
+            <div class="form-group full-width"><label for="surface_interval">⏱️ Pause TG1 & TG2 (Min):</label><input type="number" id="surface_interval" value="90" min="0" max="1000"></div>
+
+            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">TG2 Tiefe (m):</label><input type="number" id="tg2_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">TG2 Zeit (Min):</label><input type="number" id="tg2_time" value="15" min="0" max="300"></div>
+        </div>
+
+        <!-- AUSGABE TG 1 -->
+        <div class="results">
+            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 1</div>
+            <div class="result-item"><span>Luftdruck am See:</span><span id="surface_press_display">-- bar</span></div>
+            <div class="result-item"><span>Nullzeit (NDL):</span><span id="tg1_ndl">--</span></div>
+            <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
+            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg1_total_time">--</span></div>
+            <div id="tg1_deko_stopps"></div>
+            <div id="tg1_status"></div>
+        </div>
+
+        <!-- AUSGABE TG 2 -->
+        <div class="results" style="margin-top:4px;">
+            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 2</div>
+            <div class="result-item"><span>Rest-Nullzeit (effektiv):</span><span id="tg2_ndl">--</span></div>
+            <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
+            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg2_total_time">--</span></div>
+            <div id="tg2_deko_stopps"></div>
+            <div id="tg2_status"></div>
+        </div>
+    </div>
+    
+    <p class="note">von Papa für Max  -  Version 10.0 (ZH-L16C Bergsee)  -  10.08.2026</p>
+</div>
+
+<script>
+// BÜHLMANN ZH-L16C MATHEMATISCHES MODELL WITH ALTITUDE ADJUSTMENT
+
+const ZHL16C = [
+    { halfLife: 4.0,   a: 1.2599, b: 0.5050 },
+    { halfLife: 8.0,   a: 1.0000, b: 0.6514 },
+    { halfLife: 12.5,  a: 0.8618, b: 0.7222 },
+    { halfLife: 18.5,  a: 0.7562, b: 0.7825 },
+    { halfLife: 27.0,  a: 0.6200, b: 0.8126 },
+    { halfLife: 38.3,  a: 0.5043, b: 0.8434 },
+    { halfLife: 54.3,  a: 0.4410, b: 0.8693 },
+    { halfLife: 77.0,  a: 0.4000, b: 0.8910 },
+    { halfLife: 109.0, a: 0.3750, b: 0.9092 },
+    { halfLife: 146.0, a: 0.3500, b: 0.9222 },
+    { halfLife: 187.0, a: 0.3295, b: 0.9319 },
+    { halfLife: 239.0, a: 0.3065, b: 0.9403 },
+    { halfLife: 305.0, a: 0.2835, b: 0.9475 },
+    { halfLife: 390.0, a: 0.2610, b: 0.9528 },
+    { halfLife: 498.0, a: 0.2480, b: 0.9563 },
+    { halfLife: 635.0, a: 0.2327, b: 0.9602 }
+];
+
+const WATER_VAPOR_PRESSURE = 0.0627;
+const N2_RATIO = 0.79;
+
+// Berechnet den barometrischen Luftdruck in Abhängigkeit von der Seehöhe (Barometrische Höhenformel)
+function getSurfacePressure(altitudeMeters) {
+    return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
+}
+
+function createInitialTissues(surfacePressure) {
+    const pAlv = (surfacePressure - WATER_VAPOR_PRESSURE) * N2_RATIO;
+    return ZHL16C.map(() => pAlv);
+}
+
+function updateTissues(tissues, depthMeters, timeMinutes, surfacePressure) {
+    const pAmb = surfacePressure + (depthMeters / 10);
+    const pAlv = (pAmb - WATER_VAPOR_PRESSURE) * N2_RATIO;
+
+    return tissues.map((pSubstance, i) => {
+        const k = Math.LN2 / ZHL16C[i].halfLife;
+        return pAlv + (pSubstance - pAlv) * Math.exp(-k * timeMinutes);
+    });
+}
+
+function calculateNDL(tissues, targetDepthMeters, surfacePressure) {
+    if (targetDepthMeters <= 0) return 999;
+    
+    const pAmbTarget = surfacePressure + (targetDepthMeters / 10);
+    const pAlvTarget = (pAmbTarget - WATER_VAPOR_PRESSURE) * N2_RATIO;
+
+    let minNDL = 999;
+
+    ZHL16C.forEach((comp, i) => {
+        const pSubstance = tissues[i];
+        if (pAlvTarget > pSubstance) {
+            const pTolSurface = comp.a + (surfacePressure / comp.b);
+            if (pAlvTarget > pTolSurface) {
+                const k = Math.LN2 / comp.halfLife;
+                const timeToLimit = -Math.log((pTolSurface - pAlvTarget) / (pSubstance - pAlvTarget)) / k;
+                if (timeToLimit < minNDL) minNDL = timeToLimit;
+            }
+        }
+    });
+
+    return minNDL < 0 ? 0 : Math.floor(minNDL);
+}
+
+function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
+    let tissues = [...tissuesAtDepth];
+    let stops = [];
+    let currentDepth = 0;
+
+    ZHL16C.forEach((comp, i) => {
+        const pSubstance = tissues[i];
+        const minCeilingBar = (pSubstance - comp.a) * comp.b;
+        const minCeilingMeters = Math.max(0, (minCeilingBar - surfacePressure) * 10);
+        if (minCeilingMeters > currentDepth) {
+            currentDepth = minCeilingMeters;
+        }
+    });
+
+    currentDepth = Math.ceil(currentDepth / 3) * 3;
+
+    while (currentDepth > 0) {
+        let stopMinutes = 0;
+        
+        while (true) {
+            const nextDepth = currentDepth - 3;
+            const nextAmbBar = surfacePressure + (nextDepth / 10);
+
+            let safeToAscend = true;
+            for (let i = 0; i < ZHL16C.length; i++) {
+                const pTolNext = ZHL16C[i].a + (nextAmbBar / ZHL16C[i].b);
+                if (tissues[i] > pTolNext) {
+                    safeToAscend = false;
+                    break;
+                }
+            }
+
+            if (safeToAscend) break;
+
+            tissues = updateTissues(tissues, currentDepth, 1, surfacePressure);
+            stopMinutes++;
+            if (stopMinutes > 300) break;
+        }
+
+        if (stopMinutes > 0) {
+            stops.push({ depth: currentDepth, min: stopMinutes });
+        }
+
+        currentDepth -= 3;
+    }
+
+    return { stops, finalTissues: tissues };
+}
+
+// APP LOGIK & SPEICHERUNG
+
+const allInputs = [
+    'amv_depth', 'amv_time', 'amv_tank', 'amv_bar',
+    'altitude_preset', 'custom_altitude',
+    'tg_amv', 'tg_tank', 'tg_start_bar', 'tg_reserve',
+    'tg1_depth', 'tg1_time', 'surface_interval', 'tg2_depth', 'tg2_time'
+];
+
+function loadSettings() {
+    allInputs.forEach(id => {
+        const savedValue = localStorage.getItem(id);
+        if (savedValue !== null) document.getElementById(id).value = savedValue;
+    });
+    toggleCustomAltitude();
+}
+
+function saveSettings() {
+    allInputs.forEach(id => {
+        localStorage.setItem(id, document.getElementById(id).value);
+    });
+}
+
+function toggleCustomAltitude() {
+    const preset = document.getElementById('altitude_preset').value;
+    const customGroup = document.getElementById('custom_altitude_group');
+    if (preset === 'custom') {
+        customGroup.style.display = 'flex';
+    } else {
+        customGroup.style.display = 'none';
+    }
+}
+
+function getSelectedAltitude() {
+    const preset = document.getElementById('altitude_preset').value;
+    if (preset === 'custom') {
+        return parseFloat(document.getElementById('custom_altitude').value) || 0;
+    }
+    return parseFloat(preset) || 0;
+}
+
+function calculateAMV() {
+    const depth = parseFloat(document.getElementById('amv_depth').value) || 0;
+    const time = parseFloat(document.getElementById('amv_time').value) || 1;
+    const tank = parseFloat(document.getElementById('amv_tank').value) || 1;
+    const bar = parseFloat(document.getElementById('amv_bar').value) || 0;
+    const altitude = getSelectedAltitude();
+    const surfacePressure = getSurfacePressure(altitude);
+    const pAmb = surfacePressure + (depth / 10);
+    const amv = (bar * tank) / (pAmb * time);
+    
+    if (amv > 0 && isFinite(amv)) {
+        document.getElementById('amv_result').innerText = amv.toFixed(1) + " L/min";
+        document.getElementById('tg_amv').value = amv.toFixed(1);
+        saveSettings();
+    }
+}
+
+function calculateDives() {
+    const altitude = getSelectedAltitude();
+    const surfacePressure = getSurfacePressure(altitude);
+    document.getElementById('surface_press_display').innerText = surfacePressure.toFixed(3) + " bar (" + Math.round(altitude) + "m ü.NN)";
+
+    const amv = parseFloat(document.getElementById('tg_amv').value) || 15;
+    const tank = parseFloat(document.getElementById('tg_tank').value) || 12;
+    const startBar = parseFloat(document.getElementById('tg_start_bar').value) || 200;
+    const reserve = parseFloat(document.getElementById('tg_reserve').value) || 50;
+
+    const tg1Depth = parseFloat(document.getElementById('tg1_depth').value) || 0;
+    const tg1Time = parseFloat(document.getElementById('tg1_time').value) || 0;
+    const surfaceInterval = parseFloat(document.getElementById('surface_interval').value) || 0;
+    const tg2Depth = parseFloat(document.getElementById('tg2_depth').value) || 0;
+    const tg2Time = parseFloat(document.getElementById('tg2_time').value) || 0;
+
+    let tissues = createInitialTissues(surfacePressure);
+
+    // --- TG 1 ---
+    const ndl1 = calculateNDL(tissues, tg1Depth, surfacePressure);
+    document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " Min";
+
+    tissues = updateTissues(tissues, tg1Depth, tg1Time, surfacePressure);
+    const deko1 = calculateDecompressionStops(tissues, surfacePressure);
+
+    const pAmb1 = surfacePressure + (tg1Depth / 10);
+    const barCons1 = (amv * pAmb1 * tg1Time) / tank;
+    const endBar1 = startBar - barCons1;
+    document.getElementById('tg1_air_needed').innerText = Math.ceil(barCons1) + "b";
+    document.getElementById('tg1_air_left').innerText = Math.floor(endBar1) + "b";
+
+    const isDeko1 = deko1.stops.length > 0;
+    renderOutput(tg1Time, deko1.stops, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, false);
+
+    // Entgasung während Dekostopps TG1
+    tissues = deko1.finalTissues;
+
+    // --- PAUSE ---
+    tissues = updateTissues(tissues, 0, surfaceInterval, surfacePressure);
+
+    // --- TG 2 ---
+    const ndl2 = calculateNDL(tissues, tg2Depth, surfacePressure);
+    document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : ndl2 + " Min";
+
+    tissues = updateTissues(tissues, tg2Depth, tg2Time, surfacePressure);
+    const deko2 = calculateDecompressionStops(tissues, surfacePressure);
+
+    const pAmb2 = surfacePressure + (tg2Depth / 10);
+    const barCons2 = (amv * pAmb2 * tg2Time) / tank;
+    const endBar2 = startBar - barCons2;
+    document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + "b";
+    document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + "b";
+
+    renderOutput(tg2Time, deko2.stops, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, isDeko1);
+}
+
+function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, tg1WasDeko) {
+    let stoppsHtml = "";
+    let statusHtml = "";
+    let dekoStoppsSumme = 0;
+
+    if (rawPlannedTime <= 0) {
+        document.getElementById(totalTimeId).innerText = "--";
+        document.getElementById(stoppsId).innerHTML = "";
+        document.getElementById(statusId).innerHTML = "";
+        return;
+    }
+
+    if (stops.length === 0) {
+        dekoStoppsSumme = 3;
+        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3m / 3 Min</span></div>`;
+    } else {
+        stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>⚠️ Dekostopps:</span><span></span></div>`;
+        stops.forEach(st => {
+            stoppsHtml += `<div class="result-item"><span>${st.depth}m Stopp:</span> <span>${st.min} Min</span></div>`;
+            dekoStoppsSumme += st.min;
+        });
+    }
+
+    let totalTimeCombined = rawPlannedTime + dekoStoppsSumme;
+    document.getElementById(totalTimeId).innerText = totalTimeCombined + " Min";
+
+    if (endBar < reserve) {
+        statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten (${Math.floor(endBar)} bar)!</div>`;
+    } else if (isTG2 && tg1WasDeko) {
+        statusHtml = `<div class="alert alert-danger">❌ Deko-Lockout (TG1 war Deko)!</div>`;
+    } else if (stops.length > 0) {
+        statusHtml = `<div class="alert alert-warning">⚠️ DEKO-Tauchgang!</div>`;
+    } else {
+        statusHtml = `<div class="alert alert-success">✅ OK</div>`;
+    }
+
+    document.getElementById(stoppsId).innerHTML = stoppsHtml;
+    document.getElementById(statusId).innerHTML = statusHtml;
+}
+
+document.getElementById('altitude_preset').addEventListener('change', () => {
+    toggleCustomAltitude();
+    saveSettings();
+    calculateAMV();
+    calculateDives();
+});
+
+allInputs.forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+        saveSettings();
+        calculateAMV();
+        calculateDives();
+    });
+});
+
+loadSettings();
+calculateAMV();
+calculateDives();
+</script>
+</body>
+</html>
