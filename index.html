@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tauchgangs-Planer</title>
+    <title>Tauchgangs-Planer (Bühlmann ZH-L16C)</title>
   
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png"> 
@@ -14,8 +14,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="icon-192.png">
     
-	<script>
-      // Service Worker Registrierung
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('sw.js')
@@ -25,10 +24,9 @@
     </script>
 			
     <style>
-
-/* Fix für PWA-Ränder und den blauen Balken */
-        html {background-color: #000000 !important;
-              overscroll-behavior-y: none;
+        html {
+            background-color: #000000 !important;
+            overscroll-behavior-y: none;
         }
 
         :root {
@@ -63,14 +61,14 @@
             text-align: center;
             color: var(--primary);
             margin: 4px 0 2px 0;
-            font-size: 1.1rem;
+            font-size: 1.4rem;
         }
 
         .subtitle {
             text-align: center;
             color: var(--text-muted);
             margin-bottom: 6px;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
 
         .card {
@@ -111,7 +109,7 @@
             color: var(--text-muted);
         }
 
-        input {
+        input, select {
             padding: 3px 6px;
             border: 1px solid var(--border);
             border-radius: 4px;
@@ -122,7 +120,7 @@
             box-sizing: border-box;
         }
 
-        input:focus {
+        input:focus, select:focus {
             outline: 1px solid var(--primary);
         }
 
@@ -161,7 +159,7 @@
         .alert-success { background-color: #064e3b; color: #bbf7d0; border: 1px solid #065f46; }
         
         .note {
-            font-size: 0.65rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             text-align: center;
             margin: 4px 0;
@@ -171,47 +169,61 @@
 <body>
 
 <div class="container">
-    <h1>🤿 Tauchgangs-Planer (VDST DECO 2000)</h1>
-    <div class="subtitle">Tauchtiefen 12-63m</div>
+    <h1>🤿 Tauchgangs-Planer (Bühlmann ZH-L16C)</h1>
+    <div class="subtitle">Dynamische Gewebeberechnung mit Höhenanpassung</div>
 
     <!-- AMV RECHNER -->
     <div class="card">
         <h2>1. AMV-Ermittlung</h2>
         <div class="grid">
-            <div class="form-group"><label for="amv_depth">Ø Tiefe (m):</label><input type="number" id="amv_depth" value="15" min="0"></div>
-            <div class="form-group"><label for="amv_time">Zeit (Min):</label><input type="number" id="amv_time" value="45" min="1"></div>
-            <div class="form-group"><label for="amv_tank">Flasche (L):</label><input type="number" id="amv_tank" value="12" min="1"></div>
-            <div class="form-group"><label for="amv_bar">Verbrauch (bar):</label><input type="number" id="amv_bar" value="130" min="1"></div>
+		
+		<!-- Default für AMV-Ermittlung (Flasche) -->
+            <div class="form-group"><label for="amv_depth">Ø Tiefe (m):</label><input type="number" id="amv_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="amv_time">Zeit (Min):</label><input type="number" id="amv_time" value="35" min="0" max="240"></div>
+            <div class="form-group"><label for="amv_tank">Flasche (L):</label><input type="number" id="amv_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="amv_bar">Verbrauch (bar):</label><input type="number" id="amv_bar" value="150" min="0" max="300" step="5"></div>
         </div>
         <div class="results">
-            <div class="result-item"><span>Dein AMV:</span><span id="amv_result" style="font-weight: bold; color: var(--primary);">-- L/min</span></div>
+            <div class="result-item"><span>AMV:</span><span id="amv_result" style="font-weight: bold; color: var(--primary);">-- L/min</span></div>
         </div>
     </div>
 
-    <!-- TAUCHGANGSPLANER -->
     <div class="card">
-        <h2>2. Kalkulation</h2>
+        <h2>2. Kalkulation & Höhe</h2>
         <div class="grid">
+            <div class="form-group full-width">
+                <label for="altitude_preset" style="color:var(--warning)"> Höhenstufe / Gewässerhöhe (m ü. N.N.):</label>
+                <select id="altitude_preset">
+                    <option value="0">Meereshöhe bis 700 m (Normal / Standard DECO 2000)</option>
+                    <option value="1100">Bergsee: 701 m - 1500 m ü. N.N. (z. B. DECO 2000.1)</option>
+                    <option value="custom">Manuelle Gewässerhöhe eingeben...</option>
+                </select>
+            </div>
+
+            <div class="form-group full-width" id="custom_altitude_group" style="display:none;">
+                <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.):</label>
+                <input type="number" id="custom_altitude" value="1000" min="0" max="5000">
+            </div>
+
             <div class="form-group"><label for="tg_amv">AMV-Basis:</label><input type="number" id="tg_amv" value="15" min="5" step="0.1"></div>
-            <div class="form-group"><label for="tg_tank">Flasche (L):</label><input type="number" id="tg_tank" value="12" min="1"></div>
-            <div class="form-group"><label for="tg_start_bar">Start (bar):</label><input type="number" id="tg_start_bar" value="200" min="1"></div>
-            <div class="form-group"><label for="tg_reserve">Reserve (bar):</label><input type="number" id="tg_reserve" value="50" min="0"></div>
+            <div class="form-group"><label for="tg_tank">Flasche (L):</label><input type="number" id="tg_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="tg_start_bar">Start (bar):</label><input type="number" id="tg_start_bar" value="200" min="0" max="300"></div>
+            <div class="form-group"><label for="tg_reserve">Reserve (bar):</label><input type="number" id="tg_reserve" value="50" min="50" max="100" step="5"></div>
 
-            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">TG1 Tiefe (m):</label><input type="number" id="tg1_depth" value="20" min="0"></div>
-            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">TG1 Zeit (Min):</label><input type="number" id="tg1_time" value="30" min="1"></div>
+            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">TG1 Tiefe (m):</label><input type="number" id="tg1_depth" value="20" min="0" max="100"></div>
+            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">TG1 Zeit (Min):</label><input type="number" id="tg1_time" value="20" min="0" max="300"></div>
 
-            <div class="form-group full-width"><label for="surface_interval">⏱️ Pause TG1 & TG2 (Min):</label><input type="number" id="surface_interval" value="90" min="0"></div>
+            <div class="form-group full-width"><label for="surface_interval">⏱️ Pause TG1 & TG2 (Min):</label><input type="number" id="surface_interval" value="90" min="0" max="1000"></div>
 
-            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">TG2 Tiefe (m):</label><input type="number" id="tg2_depth" value="18" min="0"></div>
-            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">TG2 Zeit (Min):</label><input type="number" id="tg2_time" value="35" min="1"></div>
+            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">TG2 Tiefe (m):</label><input type="number" id="tg2_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">TG2 Zeit (Min):</label><input type="number" id="tg2_time" value="15" min="0" max="300"></div>
         </div>
 
         <!-- AUSGABE TG 1 -->
         <div class="results">
             <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 1</div>
+            <div class="result-item"><span>Luftdruck am See:</span><span id="surface_press_display">-- bar</span></div>
             <div class="result-item"><span>Nullzeit (NDL):</span><span id="tg1_ndl">--</span></div>
-            <div class="result-item"><span>Wiederholer-Gruppe:</span><span id="tg1_group" style="color:var(--primary)">--</span></div>
-            <div class="result-item"><span>✈️ Flugverbot nach TG1:</span><span id="tg1_nofly" style="color:var(--warning); font-weight:bold;">--</span></div>
             <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
             <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg1_total_time">--</span></div>
             <div id="tg1_deko_stopps"></div>
@@ -221,9 +233,7 @@
         <!-- AUSGABE TG 2 -->
         <div class="results" style="margin-top:4px;">
             <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 2</div>
-            <div class="result-item"><span>Gruppe n. Pause / Zuschlag:</span><span><span id="tg2_start_group">--</span> (<span id="tg2_penalty" style="color:var(--danger)">--</span>)</span></div>
-            <div class="result-item"><span>Rest-Nullzeit (effektiv):</span><span><span id="tg2_ndl">--</span> (<span id="tg2_eff_time">--</span>)</span></div>
-            <div class="result-item"><span>✈️ Flugverbot nach TG2:</span><span id="tg2_nofly" style="color:var(--warning); font-weight:bold;">--</span></div>
+            <div class="result-item"><span>Rest-Nullzeit (effektiv):</span><span id="tg2_ndl">--</span></div>
             <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
             <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg2_total_time">--</span></div>
             <div id="tg2_deko_stopps"></div>
@@ -231,315 +241,131 @@
         </div>
     </div>
     
-    <p class="note">von Papa für Max  -  Version 3.1  -  21.07.2026</p>
+    <p class="note">von Papa für Max  -  Version 10.0 (ZH-L16C Bergsee)  -  10.08.2026</p>
 </div>
 
 <script>
+// BÜHLMANN ZH-L16C MATHEMATISCHES MODELL WITH ALTITUDE ADJUSTMENT
 
-const deco2000ExactTable = {
-    12: [
-        { maxTime: 36,  group: 'D', stops: [] },
-        { maxTime: 54,  group: 'E', stops: [] },
-        { maxTime: 72,  group: 'F', stops: [] },
-        { maxTime: 90,  group: 'G', stops: [] },
-        { maxTime: 108, group: 'G', stops: [] },
-        { maxTime: 126, group: 'G', stops: [] },
-        { maxTime: 144, group: 'G', stops: [{ depth: 3, min: 4 }] },
-        
-        <!-- eigene Erweiterung -->
-        { maxTime: 162, group: 'G', stops: [{ depth: 3, min: 8 }] },
-        { maxTime: 180, group: 'G', stops: [{ depth: 3, min: 12 }] },
-        { maxTime: 198, group: 'G', stops: [{ depth: 3, min: 16 }] },
-        { maxTime: 216, group: 'G', stops: [{ depth: 3, min: 20 }] },
-        { maxTime: 234, group: 'G', stops: [{ depth: 3, min: 24 }] }
-     ],
-    15: [
-        { maxTime: 24, group: 'D', stops: [] },
-        { maxTime: 36, group: 'E', stops: [] },
-        { maxTime: 48, group: 'E', stops: [] },
-        { maxTime: 60, group: 'F', stops: [] },
-        { maxTime: 72, group: 'G', stops: [] },
-        { maxTime: 84, group: 'G', stops: [{ depth: 3, min: 4 }] },
-        
-        <!-- eigene Erweiterung -->
-        { maxTime: 96, group:  'G', stops: [{ depth: 3, min: 8 }] },
-        { maxTime: 108, group: 'G', stops: [{ depth: 3, min: 14 }] },
-        { maxTime: 120, group: 'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 22 }] },
-		{ maxTime: 140, group: 'G', stops: [{ depth: 6, min: 3 },{ depth: 3, min: 25 }] }
-    ],
-    18: [
-        { maxTime: 15, group:  'C', stops: [] },
-        { maxTime: 25, group:  'D', stops: [] },
-        { maxTime: 35, group:  'E', stops: [] },
-        { maxTime: 45, group:  'F', stops: [] },
-        { maxTime: 55, group:  'F', stops: [{ depth: 3, min: 4 }] },
-        { maxTime: 65, group:  'G', stops: [{ depth: 3, min: 8 }] },
-        { maxTime: 75, group:  'G', stops: [{ depth: 3, min: 14 }] },
-        
-        <!-- eigene Erweiterung -->
-        { maxTime: 90, group:  'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 18 }] },
-        { maxTime: 105, group: 'G', stops: [{ depth: 6, min: 4 },{ depth: 3, min: 22 }] },
-        { maxTime: 115, group: 'G', stops: [{ depth: 6, min: 8 },{ depth: 3, min: 26 }] }  
-    ],
-    21: [
-        { maxTime: 11, group: 'C', stops: [] },
-        { maxTime: 16, group: 'D', stops: [] },
-        { maxTime: 21, group: 'D', stops: [] },
-        { maxTime: 26, group: 'E', stops: [] },
-        { maxTime: 31, group: 'E', stops: [] },
-        { maxTime: 36, group: 'F', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 41, group: 'F', stops: [{ depth: 3, min: 5 }] },
-        { maxTime: 46, group: 'F', stops: [{ depth: 3, min: 7 }] },
-        { maxTime: 51, group: 'G', stops: [{ depth: 3, min: 10 }] },
-        { maxTime: 56, group: 'G', stops: [{ depth: 3, min: 13 }] },
-        { maxTime: 61, group: 'G', stops: [{ depth: 3, min: 17 }] },
-        
-        <!-- eigene Erweiterung -->
-        { maxTime: 66, group: 'G', stops: [{ depth: 6, min: 2 },{ depth: 3, min: 20 }] },
-        { maxTime: 71, group: 'G', stops: [{ depth: 6, min: 4 },{ depth: 3, min: 23 }] },
-        { maxTime: 76, group: 'G', stops: [{ depth: 6, min: 8 },{ depth: 3, min: 26 }] },
-        { maxTime: 81, group: 'G', stops: [{ depth: 6, min: 12 },{ depth: 3, min: 29 }] }
-    ],
-    24: [
-        { maxTime: 7,  group: 'B', stops: [] },
-        { maxTime: 11, group: 'C', stops: [] },
-        { maxTime: 15, group: 'C', stops: [] },
-        { maxTime: 19, group: 'D', stops: [] },
-        { maxTime: 23, group: 'E', stops: [] },
-        { maxTime: 27, group: 'E', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 31, group: 'F', stops: [{ depth: 3, min: 4 }] },
-        { maxTime: 35, group: 'F', stops: [{ depth: 3, min: 7 }] },
-        { maxTime: 39, group: 'F', stops: [{ depth: 3, min: 9 }] },
-        { maxTime: 43, group: 'G', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 12 }] },
-        { maxTime: 47, group: 'G', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 14 }] },
-        { maxTime: 51, group: 'G', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 17 }] },
-        { maxTime: 55, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 19 }] },
-        
-        <!-- eigene Erweiterung -->
-        { maxTime: 59, group: 'G', stops: [{ depth: 6, min: 7 }, { depth: 3, min: 21 }] },
-        { maxTime: 63, group: 'G', stops: [{ depth: 6, min: 9 }, { depth: 3, min: 23 }] },
-        { maxTime: 67, group: 'G', stops: [{ depth: 6, min: 11 }, { depth: 3, min: 25 }] }
-        
-    ],
-    27: [
-        { maxTime: 6,  group: 'B', stops: [] },
-        { maxTime: 10, group: 'C', stops: [] },
-        { maxTime: 14, group: 'D', stops: [] },
-        { maxTime: 18, group: 'E', stops: [] },
-        { maxTime: 22, group: 'E', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 26, group: 'F', stops: [{ depth: 3, min: 5 }] },
-        { maxTime: 30, group: 'F', stops: [{ depth: 3, min: 8 }] },
-        { maxTime: 34, group: 'G', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 10 }] },
-        { maxTime: 38, group: 'G', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 13 }] },
-        { maxTime: 42, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 15 }] },
-        { maxTime: 46, group: 'G', stops: [{ depth: 6, min: 7 }, { depth: 3, min: 18 }] },
-        { maxTime: 50, group: 'G', stops: [{ depth: 6, min: 9 }, { depth: 3, min: 21 }] }
-    ],
-    30: [
-        { maxTime: 6,  group: 'B', stops: [] },
-        { maxTime: 9,  group: 'C', stops: [] },
-        { maxTime: 12, group: 'D', stops: [] },
-        { maxTime: 15, group: 'D', stops: [] },
-        { maxTime: 18, group: 'E', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 21, group: 'E', stops: [{ depth: 3, min: 4 }] },
-        { maxTime: 24, group: 'F', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 6 }] },
-        { maxTime: 27, group: 'F', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 8 }] },
-        { maxTime: 30, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 10 }] },
-        { maxTime: 33, group: 'G', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 12 }] },
-        { maxTime: 36, group: 'G', stops: [{ depth: 6, min: 6 }, { depth: 3, min: 15 }] },
-        { maxTime: 39, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 7 }, { depth: 3, min: 17 }] },
-        { maxTime: 42, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 9 }, { depth: 3, min: 19 }] }
-    ],
-    33: [
-        { maxTime: 6,  group: 'C', stops: [] },
-        { maxTime: 9,  group: 'D', stops: [] },
-        { maxTime: 12, group: 'D', stops: [] },
-        { maxTime: 15, group: 'E', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 18, group: 'E', stops: [{ depth: 3, min: 5 }] },
-        { maxTime: 21, group: 'F', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 7 }] },
-        { maxTime: 24, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 8 }] },
-        { maxTime: 27, group: 'F', stops: [{ depth: 6, min: 5 }, { depth: 3, min: 10 }] },
-        { maxTime: 30, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 5 }, { depth: 3, min: 13 }] },
-        { maxTime: 33, group: 'G', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] },
-        { maxTime: 36, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 8 }, { depth: 3, min: 18 }] }
-    ],
-    36: [
-        { maxTime: 6,  group: 'C', stops: [] },
-        { maxTime: 10, group: 'C', stops: [] },
-        { maxTime: 14, group: 'E', stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 18, group: 'F', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
-        { maxTime: 21, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 8 }] },
-        { maxTime: 24, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 4 }, { depth: 3, min: 11 }] },
-        { maxTime: 27, group: 'G', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
-        { maxTime: 30, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 7 }, { depth: 3, min: 16 }] },
-        { maxTime: 33, group: 'G', stops: [{ depth: 9, min: 4 }, { depth: 6, min: 9 }, { depth: 3, min: 19 }] }
-    ],
-    39: [
-        { maxTime: 6,  group: 'C', stops: [] },
-        { maxTime: 9,  group: 'D', stops: [] },
-        { maxTime: 12, group: 'E', stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 15, group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 5 }] },
-        { maxTime: 18, group: 'F', stops: [{ depth: 6, min: 3 }, { depth: 3, min: 7 }] },
-        { maxTime: 21, group: 'G', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 5 }, { depth: 3, min: 9 }] },
-        { maxTime: 24, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 13 }] },
-        { maxTime: 27, group: 'G', stops: [{ depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 16 }] }
-    ],
-    42: [
-        { maxTime: 4,  group: 'C', stops: [] },
-        { maxTime: 7,  group: 'C', stops: [] },
-        { maxTime: 10, group: 'E', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 13, group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 5 }] },
-        { maxTime: 16, group: 'F', stops: [{ depth: 6, min: 4 }, { depth: 3, min: 6 }] },
-        { maxTime: 19, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 10 }] },
-        { maxTime: 22, group: 'G', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
-        { maxTime: 25, group: 'G', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 4 }, { depth: 6, min: 8 }, { depth: 3, min: 16 }] }
-    ],
-    45: [
-        { maxTime: 6,  group: 'D', stops: [] },
-        { maxTime: 8,  group: 'D', stops: [{ depth: 3, min: 1+2 }] },
-        { maxTime: 10, group: 'E', stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 12, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 4 }] },
-        { maxTime: 14, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
-        { maxTime: 16, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 9 }] },
-        { maxTime: 18, group: 'F', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 10 }] },
-        { maxTime: 20, group: 'G', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] },
-        { maxTime: 22, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] }
-    ],
-    48: [
-        { maxTime: 5,  group: 'C', stops: [] },
-        { maxTime: 7,  group: 'D', stops: [{ depth: 3, min: 1+2 }] },
-        { maxTime: 9,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
-        { maxTime: 11, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
-        { maxTime: 13, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
-        { maxTime: 15, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
-        { maxTime: 17, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 11 }] },
-        { maxTime: 19, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] },
-        { maxTime: 21, group: 'G', stops: [{ depth: 12, min: 3 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 17 }] }
-    ],
-    51: [
-        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 1+2 }] },
-        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
-        { maxTime: 10, group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 5 }] },
-        { maxTime: 12, group: 'F', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 7 }] },
-        { maxTime: 14, group: 'F', stops: [{ depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
-        { maxTime: 16, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 11 }] },
-        { maxTime: 18, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 14 }] }
-    ],
-    54: [
-        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 2+1 }] },
-        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 4 }] },
-        { maxTime: 10, group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 2 }, { depth: 3, min: 6 }] },
-        { maxTime: 12, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 7 }] },
-        { maxTime: 14, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 10 }] },
-        { maxTime: 16, group: 'G', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 13 }] }
-    ],
-    57: [
-        { maxTime: 6,  group: 'D', stops: [{ depth: 3, min: 3 }] },
-        { maxTime: 8,  group: 'E', stops: [{ depth: 6, min: 2 }, { depth: 3, min: 4 }] },
-        { maxTime: 10, group: 'F', stops: [{ depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
-        { maxTime: 12, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
-        { maxTime: 14, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 12 }] },
-        { maxTime: 16, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 3 }, { depth: 9, min: 4 }, { depth: 6, min: 7 }, { depth: 3, min: 15 }] }
-    ],
-    60: [
-        { maxTime: 6,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 3 }] },
-        { maxTime: 8,  group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 2 }, { depth: 3, min: 5 }] },
-        { maxTime: 10, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 3 }, { depth: 3, min: 7 }] },
-        { maxTime: 12, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 11 }] },
-        { maxTime: 13, group: 'F', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 5 }, { depth: 3, min: 12 }] },
-        { maxTime: 14, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] }
-    ],
-    63: [
-        { maxTime: 6,  group: 'E', stops: [{ depth: 6, min: 1 }, { depth: 3, min: 4 }] },
-        { maxTime: 8,  group: 'E', stops: [{ depth: 9, min: 1 }, { depth: 6, min: 3 }, { depth: 3, min: 6 }] },
-        { maxTime: 10, group: 'F', stops: [{ depth: 12, min: 1 }, { depth: 9, min: 2 }, { depth: 6, min: 4 }, { depth: 3, min: 9 }] },
-        { maxTime: 11, group: 'F', stops: [{ depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 4 }, { depth: 3, min: 10 }] },
-        { maxTime: 12, group: 'F', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 3 }, { depth: 6, min: 6 }, { depth: 3, min: 12 }] },
-        { maxTime: 13, group: 'G', stops: [{ depth: 15, min: 1 }, { depth: 12, min: 2 }, { depth: 9, min: 4 }, { depth: 6, min: 6 }, { depth: 3, min: 14 }] }
-    ]
-};
-
-const deco2000NdlTable = [
-    { depth: 12, ndl: 140 }, { depth: 15, ndl: 72 }, { depth: 18, ndl: 45 },
-    { depth: 21, ndl: 31 },  { depth: 24, ndl: 23 }, { depth: 27, ndl: 18 },
-    { depth: 30, ndl: 15 },  { depth: 33, ndl: 12 }, { depth: 36, ndl: 10 },
-    { depth: 39, ndl: 9 },   { depth: 42, ndl: 7 },  { depth: 45, ndl: 6 },
-    { depth: 48, ndl: 5 },   { depth: 51, ndl: 5 },  { depth: 54, ndl: 4 },
-    { depth: 57, ndl: 3 },   { depth: 60, ndl: 3 },  { depth: 63, ndl: 2 }
+const ZHL16C = [
+    { halfLife: 4.0,   a: 1.2599, b: 0.5050 },
+    { halfLife: 8.0,   a: 1.0000, b: 0.6514 },
+    { halfLife: 12.5,  a: 0.8618, b: 0.7222 },
+    { halfLife: 18.5,  a: 0.7562, b: 0.7825 },
+    { halfLife: 27.0,  a: 0.6200, b: 0.8126 },
+    { halfLife: 38.3,  a: 0.5043, b: 0.8434 },
+    { halfLife: 54.3,  a: 0.4410, b: 0.8693 },
+    { halfLife: 77.0,  a: 0.4000, b: 0.8910 },
+    { halfLife: 109.0, a: 0.3750, b: 0.9092 },
+    { halfLife: 146.0, a: 0.3500, b: 0.9222 },
+    { halfLife: 187.0, a: 0.3295, b: 0.9319 },
+    { halfLife: 239.0, a: 0.3065, b: 0.9403 },
+    { halfLife: 305.0, a: 0.2835, b: 0.9475 },
+    { halfLife: 390.0, a: 0.2610, b: 0.9528 },
+    { halfLife: 498.0, a: 0.2480, b: 0.9563 },
+    { halfLife: 635.0, a: 0.2327, b: 0.9602 }
 ];
 
-const pauseMatrix = {
-    'G': [
-        { min: 720, g: 'A' }, { min: 600, g: 'B' }, { min: 540, g: 'C' },
-        { min: 480, g: 'D' }, { min: 420, g: 'E' }, { min: 360, g: 'F' },
-        { min: 300, g: 'G' }, { min: 240, g: 'H' }, { min: 180, g: 'I' },
-		{ min: 120, g: 'J' }, { min: 0,   g: 'K' },
-    ],
-    'F': [
-        { min: 600, g: 'A' }, { min: 390, g: 'B' }, { min: 330,  g: 'C' },
-        { min: 270, g: 'D' }, { min: 225, g: 'E' }, { min: 180,  g: 'F' },
-        { min: 135, g: 'G' }, { min: 90,  g: 'H' }, { min: 60,   g: 'I' },
-		{ min: 30,  g: 'J' }, { min: 0,   g: 'K' },
-    ],
-    'E': [
-        { min: 480, g: 'A' }, { min: 210, g: 'B' }, { min: 180, g: 'C' },
-        { min: 150, g: 'D' }, { min: 120, g: 'E' }, { min: 90,  g: 'F' },
-		{ min: 60,  g: 'G' }, { min: 30,  g: 'H' }, { min: 0,   g: 'K' },
-    ],
-    'D': [
-        { min: 360, g: 'A' }, { min: 120, g: 'B' }, { min: 90,  g: 'C' },
-        { min: 60,  g: 'D' }, { min: 45,  g: 'E' }, { min: 30,  g: 'F' },
-		{ min: 0,   g: 'K' }
-    ],
-    'C': [
-        { min: 240, g: 'A' }, { min: 30,  g: 'B' }, { min: 20,   g: 'C' },
-		{ min: 10,  g: 'D' }, { min: 0,   g: 'K' }
-    ],
-    'B': [
-         {min: 120, g: 'A' }, { min: 20,  g: 'B' }, { min: 10,  g: 'C' },
-		 { min: 0,  g: 'K' }
-    ]
-};
+const WATER_VAPOR_PRESSURE = 0.0627;
+const N2_RATIO = 0.79;
 
-const penaltyMatrix = {
-    12: { 'K':100, 'J':66, 'I':60, 'H':54, 'G': 47, 'F': 41, 'E': 35, 'D': 30, 'C': 25, 'B': 20, 'A': 0 },
-    15: { 'K':100, 'J':52, 'I':47, 'H':42, 'G': 37, 'F': 32, 'E': 27, 'D': 23, 'C': 19, 'B': 16, 'A': 0 },
-	18: { 'K':100, 'J':43, 'I':39, 'H':34, 'G': 30, 'F': 26, 'E': 22, 'D': 19, 'C': 16, 'B': 13, 'A': 0 },
-    21: { 'K':100, 'J':36, 'I':33, 'H':29, 'G': 26, 'F': 22, 'E': 19, 'D': 16, 'C': 13, 'B': 11, 'A': 0 },
-    24: { 'K':100, 'J':31, 'I':28, 'H':25, 'G': 22, 'F': 19, 'E': 16, 'D': 14, 'C': 12, 'B': 10, 'A': 0 },
-    27: { 'K':100, 'J':27, 'I':25, 'H':22, 'G': 19, 'F': 17, 'E': 14, 'D': 12, 'C': 10, 'B': 8,  'A': 0 },
-    30: { 'K':100, 'J':24, 'I':22, 'H':20, 'G': 17, 'F': 15, 'E': 13, 'D': 11, 'C': 9,  'B': 8,  'A': 0 },
-    33: { 'K':100, 'J':22, 'I':20, 'H':18, 'G': 16, 'F': 14, 'E': 12, 'D': 10, 'C': 8,  'B': 7,  'A': 0 },
-    36: { 'K':100, 'J':20, 'I':18, 'H':16, 'G': 14, 'F': 12, 'E': 11, 'D': 9,  'C': 7,  'B': 6,  'A': 0 },
-    39: { 'K':100, 'J':18, 'I':17, 'H':15, 'G': 13, 'F': 11, 'E': 10, 'D': 8,  'C': 7,  'B': 6,  'A': 0 },
-    42: { 'K':100, 'J':17, 'I':15, 'H':14, 'G': 12, 'F': 10, 'E': 9,  'D': 8,  'C': 6,  'B': 5,  'A': 0 },
-    45: { 'K':100, 'J':16, 'I':14, 'H':13, 'G': 11, 'F': 10, 'E': 8,  'D': 7,  'C': 6,  'B': 5,  'A': 0 },
-    48: { 'K':100, 'J':15, 'I':13, 'H':12, 'G': 10, 'F': 9,  'E': 8,  'D': 6,  'C': 5,  'B': 4,  'A': 0 },
-    51: { 'K':100, 'J':14, 'I':12, 'H':11, 'G': 10, 'F': 8,  'E': 7,  'D': 6,  'C': 5,  'B': 4,  'A': 0 },
-    54: { 'K':100, 'J':13, 'I':12, 'H':10, 'G': 9,  'F': 8,  'E': 7,  'D': 6,  'C': 5,  'B': 4,  'A': 0 },
-    57: { 'K':100, 'J':12, 'I':11, 'H':10, 'G': 9,  'F': 8,  'E': 7,  'D': 6,  'C': 5,  'B': 4,  'A': 0 },
-    60: { 'K':100, 'J':11, 'I':10, 'H':9,  'G': 8,  'F': 7,  'E': 6,  'D': 5,  'C': 4,  'B': 4,  'A': 0 },
-    63: { 'K':100, 'J':11, 'I':10, 'H':9,  'G': 8,  'F': 7,  'E': 6,  'D': 5,  'C': 4,  'B': 3,  'A': 0 }
-};
+// Berechnet den barometrischen Luftdruck in Abhängigkeit von der Seehöhe (Barometrische Höhenformel)
+function getSurfacePressure(altitudeMeters) {
+    return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
+}
 
-const noFlyTable = {
-    'K': 24,
-	'J': 24,
-	'I': 24,
-	'H' :24,
-	'G': 24,
-    'F': 20,
-    'E': 16,
-    'D': 12,
-    'C': 8,
-    'B': 4,
-    'A': 0
-};
+function createInitialTissues(surfacePressure) {
+    const pAlv = (surfacePressure - WATER_VAPOR_PRESSURE) * N2_RATIO;
+    return ZHL16C.map(() => pAlv);
+}
 
-let tg1WasDekoDive = false;
+function updateTissues(tissues, depthMeters, timeMinutes, surfacePressure) {
+    const pAmb = surfacePressure + (depthMeters / 10);
+    const pAlv = (pAmb - WATER_VAPOR_PRESSURE) * N2_RATIO;
+
+    return tissues.map((pSubstance, i) => {
+        const k = Math.LN2 / ZHL16C[i].halfLife;
+        return pAlv + (pSubstance - pAlv) * Math.exp(-k * timeMinutes);
+    });
+}
+
+function calculateNDL(tissues, targetDepthMeters, surfacePressure) {
+    if (targetDepthMeters <= 0) return 999;
+    
+    const pAmbTarget = surfacePressure + (targetDepthMeters / 10);
+    const pAlvTarget = (pAmbTarget - WATER_VAPOR_PRESSURE) * N2_RATIO;
+
+    let minNDL = 999;
+
+    ZHL16C.forEach((comp, i) => {
+        const pSubstance = tissues[i];
+        if (pAlvTarget > pSubstance) {
+            const pTolSurface = comp.a + (surfacePressure / comp.b);
+            if (pAlvTarget > pTolSurface) {
+                const k = Math.LN2 / comp.halfLife;
+                const timeToLimit = -Math.log((pTolSurface - pAlvTarget) / (pSubstance - pAlvTarget)) / k;
+                if (timeToLimit < minNDL) minNDL = timeToLimit;
+            }
+        }
+    });
+
+    return minNDL < 0 ? 0 : Math.floor(minNDL);
+}
+
+function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
+    let tissues = [...tissuesAtDepth];
+    let stops = [];
+    let currentDepth = 0;
+
+    ZHL16C.forEach((comp, i) => {
+        const pSubstance = tissues[i];
+        const minCeilingBar = (pSubstance - comp.a) * comp.b;
+        const minCeilingMeters = Math.max(0, (minCeilingBar - surfacePressure) * 10);
+        if (minCeilingMeters > currentDepth) {
+            currentDepth = minCeilingMeters;
+        }
+    });
+
+    currentDepth = Math.ceil(currentDepth / 3) * 3;
+
+    while (currentDepth > 0) {
+        let stopMinutes = 0;
+        
+        while (true) {
+            const nextDepth = currentDepth - 3;
+            const nextAmbBar = surfacePressure + (nextDepth / 10);
+
+            let safeToAscend = true;
+            for (let i = 0; i < ZHL16C.length; i++) {
+                const pTolNext = ZHL16C[i].a + (nextAmbBar / ZHL16C[i].b);
+                if (tissues[i] > pTolNext) {
+                    safeToAscend = false;
+                    break;
+                }
+            }
+
+            if (safeToAscend) break;
+
+            tissues = updateTissues(tissues, currentDepth, 1, surfacePressure);
+            stopMinutes++;
+            if (stopMinutes > 300) break;
+        }
+
+        if (stopMinutes > 0) {
+            stops.push({ depth: currentDepth, min: stopMinutes });
+        }
+
+        currentDepth -= 3;
+    }
+
+    return { stops, finalTissues: tissues };
+}
+
+// APP LOGIK & SPEICHERUNG
 
 const allInputs = [
     'amv_depth', 'amv_time', 'amv_tank', 'amv_bar',
+    'altitude_preset', 'custom_altitude',
     'tg_amv', 'tg_tank', 'tg_start_bar', 'tg_reserve',
     'tg1_depth', 'tg1_time', 'surface_interval', 'tg2_depth', 'tg2_time'
 ];
@@ -549,6 +375,7 @@ function loadSettings() {
         const savedValue = localStorage.getItem(id);
         if (savedValue !== null) document.getElementById(id).value = savedValue;
     });
+    toggleCustomAltitude();
 }
 
 function saveSettings() {
@@ -557,61 +384,22 @@ function saveSettings() {
     });
 }
 
-function getTargetDepth(depth) {
-    let exactDepths = Object.keys(deco2000ExactTable).map(Number).sort((a,b) => a-b);
-    return exactDepths.find(d => depth <= d) || null;
-}
-
-function getNDL(depth) {
-    if (depth > 63) return -1;
-    if (depth <= 9) return 999;
-    let targetD = getTargetDepth(depth);
-    if (!targetD) return -1;
-    let entry = deco2000NdlTable.find(e => targetD <= e.depth);
-    return entry ? entry.ndl : -1;
-}
-
-function lookupExactProfile(depth, time) {
-    if (depth <= 0 || time <= 0) return null;
-    let targetD = getTargetDepth(depth);
-    if (!targetD) return null;
-    
-    let profiles = deco2000ExactTable[targetD];
-    if (!profiles) return null;
-    
-    let profile = profiles.find(p => time <= p.maxTime);
-    let ndl = getNDL(depth);
-    if (!profile && time <= ndl) {
-        return { maxTime: time, group: '-', stops: [] };
+function toggleCustomAltitude() {
+    const preset = document.getElementById('altitude_preset').value;
+    const customGroup = document.getElementById('custom_altitude_group');
+    if (preset === 'custom') {
+        customGroup.style.display = 'flex';
+    } else {
+        customGroup.style.display = 'none';
     }
-    
-    return profile || null;
 }
 
-function getWiederholergruppe(depth, time) {
-    if (depth <= 0 || time <= 0) return '-';
-    let targetD = getTargetDepth(depth);
-    if (!targetD) return '-';
-    
-    let profiles = deco2000ExactTable[targetD];
-    if (!profiles) return '-';
-
-    let profile = profiles.find(p => time <= p.maxTime);
-    return profile ? profile.group : '-';
-}
-
-function getGruppeNachPause(startGruppe, pauseMinuten) {
-    if (!startGruppe || startGruppe === '-' || pauseMinuten < 0 || !pauseMatrix[startGruppe]) return startGruppe;
-    const entry = pauseMatrix[startGruppe].find(e => pauseMinuten >= e.min);
-    return entry ? entry.g : startGruppe;
-}
-
-function getVdstZeitzuschlag(gruppe, tiefe) {
-    if (!gruppe || gruppe === '-' || tiefe <= 0 || tiefe > 63) return 0;
-    const availableDepths = Object.keys(penaltyMatrix).map(Number).sort((a, b) => a - b);
-    const matchedDepth = availableDepths.find(d => tiefe <= d);
-    if (!matchedDepth || !penaltyMatrix[matchedDepth]) return 0;
-    return penaltyMatrix[matchedDepth][gruppe] || 0;
+function getSelectedAltitude() {
+    const preset = document.getElementById('altitude_preset').value;
+    if (preset === 'custom') {
+        return parseFloat(document.getElementById('custom_altitude').value) || 0;
+    }
+    return parseFloat(preset) || 0;
 }
 
 function calculateAMV() {
@@ -619,7 +407,9 @@ function calculateAMV() {
     const time = parseFloat(document.getElementById('amv_time').value) || 1;
     const tank = parseFloat(document.getElementById('amv_tank').value) || 1;
     const bar = parseFloat(document.getElementById('amv_bar').value) || 0;
-    const pAmb = 1 + (depth / 10);
+    const altitude = getSelectedAltitude();
+    const surfacePressure = getSurfacePressure(altitude);
+    const pAmb = surfacePressure + (depth / 10);
     const amv = (bar * tank) / (pAmb * time);
     
     if (amv > 0 && isFinite(amv)) {
@@ -630,6 +420,10 @@ function calculateAMV() {
 }
 
 function calculateDives() {
+    const altitude = getSelectedAltitude();
+    const surfacePressure = getSurfacePressure(altitude);
+    document.getElementById('surface_press_display').innerText = surfacePressure.toFixed(3) + " bar (" + Math.round(altitude) + "m ü.NN)";
+
     const amv = parseFloat(document.getElementById('tg_amv').value) || 15;
     const tank = parseFloat(document.getElementById('tg_tank').value) || 12;
     const startBar = parseFloat(document.getElementById('tg_start_bar').value) || 200;
@@ -641,99 +435,67 @@ function calculateDives() {
     const tg2Depth = parseFloat(document.getElementById('tg2_depth').value) || 0;
     const tg2Time = parseFloat(document.getElementById('tg2_time').value) || 0;
 
+    let tissues = createInitialTissues(surfacePressure);
+
     // --- TG 1 ---
-    const ndl1 = getNDL(tg1Depth);
-    const profile1 = lookupExactProfile(tg1Depth, tg1Time);
+    const ndl1 = calculateNDL(tissues, tg1Depth, surfacePressure);
+    document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " Min";
 
-    if (ndl1 === -1 || tg1Depth > 63 || (tg1Time > 0 && !profile1)) {
-        invalidateOutput('tg1_ndl', 'tg1_group', 'tg1_nofly', 'tg1_air_needed', 'tg1_air_left', 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', "⚠️ Außerhalb der Tabelle!");
-        tg1WasDekoDive = false;
-    } else {
-        document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " Min";
-        const tg1Group = getWiederholergruppe(tg1Depth, tg1Time);
-        document.getElementById('tg1_group').innerText = tg1Group;
+    tissues = updateTissues(tissues, tg1Depth, tg1Time, surfacePressure);
+    const deko1 = calculateDecompressionStops(tissues, surfacePressure);
 
-        const noFly1 = noFlyTable[tg1Group] || 0;
-        document.getElementById('tg1_nofly').innerText = noFly1 > 0 ? `${noFly1} Std.` : 'Keines';
+    const pAmb1 = surfacePressure + (tg1Depth / 10);
+    const barCons1 = (amv * pAmb1 * tg1Time) / tank;
+    const endBar1 = startBar - barCons1;
+    document.getElementById('tg1_air_needed').innerText = Math.ceil(barCons1) + "b";
+    document.getElementById('tg1_air_left').innerText = Math.floor(endBar1) + "b";
 
-        const pAmb1 = 1 + (tg1Depth / 10);
-        const barCons1 = (amv * pAmb1 * tg1Time) / tank;
-        const endBar1 = startBar - barCons1;
-        document.getElementById('tg1_air_needed').innerText = Math.ceil(barCons1) + "b";
-        document.getElementById('tg1_air_left').innerText = Math.floor(endBar1) + "b";
+    const isDeko1 = deko1.stops.length > 0;
+    renderOutput(tg1Time, deko1.stops, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, false);
 
-        tg1WasDekoDive = (tg1Time > ndl1 && tg1Time > 0);
-        handleStoppsAndStatus(tg1Time, ndl1, tg1Depth, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, tg1Time);
-    }
+    // Entgasung während Dekostopps TG1
+    tissues = deko1.finalTissues;
+
+    // --- PAUSE ---
+    tissues = updateTissues(tissues, 0, surfaceInterval, surfacePressure);
 
     // --- TG 2 ---
-    const ndl2 = getNDL(tg2Depth);
-    const tg1GroupText = (ndl1 !== -1 && tg1Depth <= 63 && profile1) ? getWiederholergruppe(tg1Depth, tg1Time) : '-';
-    const tg2StartGroup = getGruppeNachPause(tg1GroupText, surfaceInterval);
-    const penaltyTime = getVdstZeitzuschlag(tg2StartGroup, tg2Depth);
-    const effectiveTime2 = tg2Time + penaltyTime;
-    const profile2 = lookupExactProfile(tg2Depth, effectiveTime2);
+    const ndl2 = calculateNDL(tissues, tg2Depth, surfacePressure);
+    document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : ndl2 + " Min";
 
-    if (ndl2 === -1 || tg2Depth > 63 || (tg2Time > 0 && !profile2)) {
-        invalidateOutput('tg2_start_group', 'tg2_penalty', 'tg2_eff_time', 'tg2_ndl', 'tg2_nofly', 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', "⚠️ Außerhalb der Tabelle!");
-    } else {
-        document.getElementById('tg2_start_group').innerText = tg2StartGroup;
-        document.getElementById('tg2_penalty').innerText = "+" + penaltyTime + "m";
-        document.getElementById('tg2_eff_time').innerText = effectiveTime2 + "m";
+    tissues = updateTissues(tissues, tg2Depth, tg2Time, surfacePressure);
+    const deko2 = calculateDecompressionStops(tissues, surfacePressure);
 
-        const remainingNdl2 = Math.max(0, ndl2 - penaltyTime);
-        document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : remainingNdl2 + "m";
+    const pAmb2 = surfacePressure + (tg2Depth / 10);
+    const barCons2 = (amv * pAmb2 * tg2Time) / tank;
+    const endBar2 = startBar - barCons2;
+    document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + "b";
+    document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + "b";
 
-        const tg2FinalGroup = getWiederholergruppe(tg2Depth, effectiveTime2);
-        const noFly2 = noFlyTable[tg2FinalGroup] || 0;
-        document.getElementById('tg2_nofly').innerText = noFly2 > 0 ? `${noFly2} Std.` : 'Keines';
-
-        const pAmb2 = 1 + (tg2Depth / 10);
-        const barCons2 = (amv * pAmb2 * tg2Time) / tank;
-        const endBar2 = startBar - barCons2;
-        document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + "b";
-        document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + "b";
-
-        handleStoppsAndStatus(effectiveTime2, ndl2, tg2Depth, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, tg2Time);
-    }
+    renderOutput(tg2Time, deko2.stops, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, isDeko1);
 }
 
-function invalidateOutput(i1, i2, i3, i4, i5, totalTimeId, stoppsId, statusId, msg) {
-    document.getElementById(i1).innerText = "--";
-    document.getElementById(i2).innerText = "--";
-    document.getElementById(i3).innerText = "--";
-    document.getElementById(i4).innerText = "--";
-    if (document.getElementById(i5)) document.getElementById(i5).innerText = "--";
-    document.getElementById(totalTimeId).innerText = "--";
-    document.getElementById(stoppsId).innerHTML = "";
-    document.getElementById(statusId).innerHTML = `<div class="alert alert-danger" style="background:#8b0000; color:#fff; font-weight:bold; padding:8px; border-radius:4px; text-align:center;">${msg}</div>`;
-}
-
-function handleStoppsAndStatus(calcTime, ndl, depth, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, rawPlannedTime) {
+function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, tg1WasDeko) {
     let stoppsHtml = "";
     let statusHtml = "";
     let dekoStoppsSumme = 0;
-    
-    if (calcTime <= 0 || depth <= 0) {
+
+    if (rawPlannedTime <= 0) {
         document.getElementById(totalTimeId).innerText = "--";
         document.getElementById(stoppsId).innerHTML = "";
         document.getElementById(statusId).innerHTML = "";
         return;
     }
 
-    if (calcTime <= ndl) {
+    if (stops.length === 0) {
         dekoStoppsSumme = 3;
         stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3m / 3 Min</span></div>`;
     } else {
-        let profile = lookupExactProfile(depth, calcTime);
-        let exactStops = (profile && profile.stops) ? profile.stops : [];
-        if (exactStops && exactStops.length > 0) {
-            stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>⚠️ Dekostopps:</span><span></span></div>`;
-            exactStops.forEach(st => {
-                stoppsHtml += `<div class="result-item"><span>${st.depth}m Stopp:</span> <span>${st.min} Min</span></div>`;
-                dekoStoppsSumme += st.min;
-            });
-        }
+        stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>⚠️ Dekostopps:</span><span></span></div>`;
+        stops.forEach(st => {
+            stoppsHtml += `<div class="result-item"><span>${st.depth}m Stopp:</span> <span>${st.min} Min</span></div>`;
+            dekoStoppsSumme += st.min;
+        });
     }
 
     let totalTimeCombined = rawPlannedTime + dekoStoppsSumme;
@@ -741,9 +503,9 @@ function handleStoppsAndStatus(calcTime, ndl, depth, totalTimeId, stoppsId, stat
 
     if (endBar < reserve) {
         statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten (${Math.floor(endBar)} bar)!</div>`;
-    } else if (isTG2 && tg1WasDekoDive) {
-        statusHtml = `<div class="alert alert-danger">❌ Deko-Lockout!</div>`;
-    } else if (calcTime > ndl) {
+    } else if (isTG2 && tg1WasDeko) {
+        statusHtml = `<div class="alert alert-danger">❌ Deko-Lockout (TG1 war Deko)!</div>`;
+    } else if (stops.length > 0) {
         statusHtml = `<div class="alert alert-warning">⚠️ DEKO-Tauchgang!</div>`;
     } else {
         statusHtml = `<div class="alert alert-success">✅ OK</div>`;
@@ -752,6 +514,13 @@ function handleStoppsAndStatus(calcTime, ndl, depth, totalTimeId, stoppsId, stat
     document.getElementById(stoppsId).innerHTML = stoppsHtml;
     document.getElementById(statusId).innerHTML = statusHtml;
 }
+
+document.getElementById('altitude_preset').addEventListener('change', () => {
+    toggleCustomAltitude();
+    saveSettings();
+    calculateAMV();
+    calculateDives();
+});
 
 allInputs.forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
