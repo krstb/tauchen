@@ -31,11 +31,11 @@
 
         :root {
             --primary: #0284c7;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --bg: ##000000;
+            --card-bg: #334155;
+            --text: #ffffff;
+            --text-muted: #cbd5e1;
+            --border: #6A7E9A;
             --warning: #f59e0b;
             --danger: #ef4444;
             --success: #22c55e;
@@ -170,21 +170,20 @@
 
 <div class="container">
     <h1>🤿 Tauchgangs-Planer</h1>
-    <div class="subtitle">Gewebesättigung nach Bühlmann ZH-L16C</div>
+    <div class="subtitle">Gewebesättigung (Bühlmann ZH-L16C)</div>
 
     <!-- AMV RECHNER -->
     <div class="card">
-        <h2>1. Atemminutenvolumen ermitteln</h2>
+        <h2>1. Atemminutenvolumen ermitteln und Sauerstoff in % eingeben</h2>
         <div class="grid">
-		
-		<!-- Default für AMV-Ermittlung (Flasche) -->
-            <div class="form-group"><label for="amv_depth">Durchschnitt. Tiefe (m):</label><input type="number" id="amv_depth" value="15" min="0" max="100"></div>
-            <div class="form-group"><label for="amv_time">Zeit (min):</label><input type="number" id="amv_time" value="35" min="0" max="240"></div>
-            <div class="form-group"><label for="amv_tank">Flaschevolumen (L):</label><input type="number" id="amv_tank" value="12" min="4" max="30"></div>
-            <div class="form-group"><label for="amv_bar">Luftverbrauch (bar):</label><input type="number" id="amv_bar" value="150" min="0" max="300" step="5"></div>
+            <div class="form-group"><label for="amv_depth">Durchschnitt. Tiefe (m)</label><input type="number" id="amv_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="amv_time">Zeit (min)</label><input type="number" id="amv_time" value="35" min="0" max="240"></div>
+            <div class="form-group"><label for="amv_tank">Flaschevolumen (L)</label><input type="number" id="amv_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="amv_bar">Luftverbrauch (bar)</label><input type="number" id="amv_bar" value="150" min="0" max="300" step="5"></div>
         </div>
-        <div class="results">
-            <div class="result-item"><span>AMV:</span><span id="amv_result" style="font-weight: bold; color: var(--primary);">-- L/min</span></div>
+        <div class="grid" style="margin-top:4px;">
+            <div class="form-group"><label>Atemminutenvolumen</label><div id="amv_result" style="padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-weight:bold; color:var(--primary); background:#0f172a; height:24px; box-sizing:border-box;">-- L/min</div></div>
+            <div class="form-group"><label for="tg_O2">Sauerstoff 21 O₂ (%) Nitrox 32 oder 36</label><input type="number" id="tg_O2" value="21" min="21" max="100"></div>
         </div>
     </div>
 
@@ -192,56 +191,56 @@
         <h2>Tauchzeit und Tiefe sowie Höhe eingeben</h2>
         <div class="grid">
             <div class="form-group full-width">
-                <label for="altitude_preset" style="color:var(--warning)">Gewässerhöhe (m ü. N.N.):</label>
+                <label for="altitude_preset" style="color:var(--warning)">Gewässerhöhe (m ü. N.N.)</label>
                 <select id="altitude_preset">
                     <option value="0">Meereshöhe bis 700 m ü. N.N. (Standard)</option>
                     <option value="1100">Bergsee: 701 m - 1500 m ü. N.N.</option>
-                    <option value="custom">Manuelle Gewässerhöhe eingeben...</option>
+                    <option value="custom">Manuelle Gewässerhöhe eingeben</option>
                 </select>
             </div>
 
             <div class="form-group full-width" id="custom_altitude_group" style="display:none;">
-                <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.):</label>
+                <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.)</label>
                 <input type="number" id="custom_altitude" value="1000" min="0" max="5000">
             </div>
 
-            <div class="form-group"><label for="tg_amv">AMV übernommen in L/min:</label><input type="number" id="tg_amv" value="15" min="5" step="0.1"></div>
-            <div class="form-group"><label for="tg_tank">Flaschenvolumen (L):</label><input type="number" id="tg_tank" value="12" min="4" max="30"></div>
-            <div class="form-group"><label for="tg_start_bar">Startdruck (bar):</label><input type="number" id="tg_start_bar" value="200" min="0" max="300"></div>
-            <div class="form-group"><label for="tg_reserve">Reserve (bar):</label><input type="number" id="tg_reserve" value="50" min="50" max="100" step="5"></div>
+            <div class="form-group"><label for="tg_amv">Atemminutenvolumen übernommen in L/min</label><input type="number" id="tg_amv" value="15" min="5" step="0.1"></div>
+            <div class="form-group"><label for="tg_tank">Flaschenvolumen (L)</label><input type="number" id="tg_tank" value="12" min="4" max="30"></div>
+            <div class="form-group"><label for="tg_start_bar">Startdruck (bar)</label><input type="number" id="tg_start_bar" value="200" min="0" max="300"></div>
+            <div class="form-group"><label for="tg_reserve">Reserve (bar)</label><input type="number" id="tg_reserve" value="50" min="50" max="100" step="5"></div>
 
-            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">TG1 Tiefe (m):</label><input type="number" id="tg1_depth" value="20" min="0" max="100"></div>
-            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">TG1 Zeit (min):</label><input type="number" id="tg1_time" value="20" min="0" max="300"></div>
+            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">Tauchgang 1 Tiefe (m)</label><input type="number" id="tg1_depth" value="20" min="0" max="100"></div>
+            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">Tauchgang 1 Zeit (min)</label><input type="number" id="tg1_time" value="20" min="0" max="300"></div>
 
-            <div class="form-group full-width"><label for="surface_interval">Pause zwischen TG1 u. TG2 (min):</label><input type="number" id="surface_interval" value="90" min="0" max="1000"></div>
+            <div class="form-group full-width"><label for="surface_interval">Pause zwischen Tauchgang 1 u. 2 in (min)</label><input type="number" id="surface_interval" value="90" min="0" max="1000"></div>
 
-            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">TG2 Tiefe (m):</label><input type="number" id="tg2_depth" value="15" min="0" max="100"></div>
-            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">TG2 Zeit (min):</label><input type="number" id="tg2_time" value="15" min="0" max="300"></div>
+            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">Tauchgang 2 Tiefe (m)</label><input type="number" id="tg2_depth" value="15" min="0" max="100"></div>
+            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">Tauchgang 2 Zeit (min)</label><input type="number" id="tg2_time" value="15" min="0" max="300"></div>
         </div>
 
         <!-- AUSGABE TG 1 -->
         <div class="results">
-            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 1</div>
-            <div class="result-item"><span>Luftdruck am Gewässer:</span><span id="surface_press_display">-- bar</span></div>
-            <div class="result-item"><span>Nullzeit (NDL):</span><span id="tg1_ndl">--</span></div>
-            <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
-            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg1_total_time">--</span></div>
+            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis Tauchgang 1</div>
+            <div class="result-item"><span>Luftdruck am Gewässer</span><span id="surface_press_display">-- bar</span></div>
+            <div class="result-item"><span>Nullzeit (NDL)</span><span id="tg1_ndl">--</span></div>
+            <div class="result-item"><span>Luft (Verbrauch / Rest)</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
+            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit</span><span id="tg1_total_time">--</span></div>
             <div id="tg1_deko_stopps"></div>
             <div id="tg1_status"></div>
         </div>
 
         <!-- AUSGABE TG 2 -->
         <div class="results" style="margin-top:4px;">
-            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis TG 2</div>
-            <div class="result-item"><span>Rest-Nullzeit (effektiv):</span><span id="tg2_ndl">--</span></div>
-            <div class="result-item"><span>Luft (Verbrauch / Rest):</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
-            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit:</span><span id="tg2_total_time">--</span></div>
+            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis Tauchgang 2</div>
+            <div class="result-item"><span>Rest-Nullzeit (effektiv)</span><span id="tg2_ndl">--</span></div>
+            <div class="result-item"><span>Luft (Verbrauch / Rest)</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
+            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit</span><span id="tg2_total_time">--</span></div>
             <div id="tg2_deko_stopps"></div>
             <div id="tg2_status"></div>
         </div>
     </div>
     
-    <p class="note">von Papa für Max  -  V. 10.1 - 08.26</p>
+    <p class="note">von Papa für Max  -  V. 12.0 - 08.26</p>
 </div>
 
 <script>
@@ -267,21 +266,26 @@ const ZHL16C = [
 ];
 
 const WATER_VAPOR_PRESSURE = 0.0627;
-const N2_RATIO = 0.79;
 
-// Berechnet den barometrischen Luftdruck in Abhängigkeit von der Seehöhe (Barometrische Höhenformel)
 function getSurfacePressure(altitudeMeters) {
     return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
 }
 
+function getN2Ratio() {
+    const o2Percent = parseFloat(document.getElementById('tg_O2').value) || 21;
+    return (100 - o2Percent) / 100;
+}
+
 function createInitialTissues(surfacePressure) {
-    const pAlv = (surfacePressure - WATER_VAPOR_PRESSURE) * N2_RATIO;
+    const n2Ratio = getN2Ratio();
+    const pAlv = (surfacePressure - WATER_VAPOR_PRESSURE) * n2Ratio;
     return ZHL16C.map(() => pAlv);
 }
 
 function updateTissues(tissues, depthMeters, timeMinutes, surfacePressure) {
+    const n2Ratio = getN2Ratio();
     const pAmb = surfacePressure + (depthMeters / 10);
-    const pAlv = (pAmb - WATER_VAPOR_PRESSURE) * N2_RATIO;
+    const pAlv = (pAmb - WATER_VAPOR_PRESSURE) * n2Ratio;
 
     return tissues.map((pSubstance, i) => {
         const k = Math.LN2 / ZHL16C[i].halfLife;
@@ -292,8 +296,9 @@ function updateTissues(tissues, depthMeters, timeMinutes, surfacePressure) {
 function calculateNDL(tissues, targetDepthMeters, surfacePressure) {
     if (targetDepthMeters <= 0) return 999;
     
+    const n2Ratio = getN2Ratio();
     const pAmbTarget = surfacePressure + (targetDepthMeters / 10);
-    const pAlvTarget = (pAmbTarget - WATER_VAPOR_PRESSURE) * N2_RATIO;
+    const pAlvTarget = (pAmbTarget - WATER_VAPOR_PRESSURE) * n2Ratio;
 
     let minNDL = 999;
 
@@ -361,12 +366,10 @@ function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
     return { stops, finalTissues: tissues };
 }
 
-// APP LOGIK & SPEICHERUNG
-
 const allInputs = [
     'amv_depth', 'amv_time', 'amv_tank', 'amv_bar',
     'altitude_preset', 'custom_altitude',
-    'tg_amv', 'tg_tank', 'tg_start_bar', 'tg_reserve',
+    'tg_O2', 'tg_amv', 'tg_tank', 'tg_start_bar', 'tg_reserve',
     'tg1_depth', 'tg1_time', 'surface_interval', 'tg2_depth', 'tg2_time'
 ];
 
@@ -424,6 +427,7 @@ function calculateDives() {
     const surfacePressure = getSurfacePressure(altitude);
     document.getElementById('surface_press_display').innerText = surfacePressure.toFixed(3) + " bar (" + Math.round(altitude) + " m ü. N.N.)";
 
+    const o2Percent = parseFloat(document.getElementById('tg_O2').value) || 21;
     const amv = parseFloat(document.getElementById('tg_amv').value) || 15;
     const tank = parseFloat(document.getElementById('tg_tank').value) || 12;
     const startBar = parseFloat(document.getElementById('tg_start_bar').value) || 200;
@@ -435,6 +439,11 @@ function calculateDives() {
     const tg2Depth = parseFloat(document.getElementById('tg2_depth').value) || 0;
     const tg2Time = parseFloat(document.getElementById('tg2_time').value) || 0;
 
+    const pAmb1 = surfacePressure + (tg1Depth / 10);
+    const pAmb2 = surfacePressure + (tg2Depth / 10);
+    const ppO2_1 = pAmb1 * (o2Percent / 100);
+    const ppO2_2 = pAmb2 * (o2Percent / 100);
+
     let tissues = createInitialTissues(surfacePressure);
 
     // --- TG 1 ---
@@ -444,16 +453,14 @@ function calculateDives() {
     tissues = updateTissues(tissues, tg1Depth, tg1Time, surfacePressure);
     const deko1 = calculateDecompressionStops(tissues, surfacePressure);
 
-    const pAmb1 = surfacePressure + (tg1Depth / 10);
     const barCons1 = (amv * pAmb1 * tg1Time) / tank;
     const endBar1 = startBar - barCons1;
     document.getElementById('tg1_air_needed').innerText = Math.ceil(barCons1) + " bar";
     document.getElementById('tg1_air_left').innerText = Math.floor(endBar1) + " bar";
 
     const isDeko1 = deko1.stops.length > 0;
-    renderOutput(tg1Time, deko1.stops, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, false);
+    renderOutput(tg1Time, deko1.stops, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, false, ppO2_1);
 
-    // Entgasung während Dekostopps TG1
     tissues = deko1.finalTissues;
 
     // --- PAUSE ---
@@ -466,16 +473,15 @@ function calculateDives() {
     tissues = updateTissues(tissues, tg2Depth, tg2Time, surfacePressure);
     const deko2 = calculateDecompressionStops(tissues, surfacePressure);
 
-    const pAmb2 = surfacePressure + (tg2Depth / 10);
     const barCons2 = (amv * pAmb2 * tg2Time) / tank;
     const endBar2 = startBar - barCons2;
     document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + " bar";
     document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + " bar";
 
-    renderOutput(tg2Time, deko2.stops, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, isDeko1);
+    renderOutput(tg2Time, deko2.stops, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, isDeko1, ppO2_2);
 }
 
-function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, tg1WasDeko) {
+function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, tg1WasDeko, ppO2) {
     let stoppsHtml = "";
     let statusHtml = "";
     let dekoStoppsSumme = 0;
@@ -489,7 +495,7 @@ function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, en
 
     if (stops.length === 0) {
         dekoStoppsSumme = 3;
-        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp:</span><span>3 m / 3 min</span></div>`;
+        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp</span><span>3 m / 3 min</span></div>`;
     } else {
         stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>Dekostopps:</span><span></span></div>`;
         stops.forEach(st => {
@@ -501,7 +507,9 @@ function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, en
     let totalTimeCombined = rawPlannedTime + dekoStoppsSumme;
     document.getElementById(totalTimeId).innerText = totalTimeCombined + " min";
 
-    if (endBar < reserve) {
+    if (ppO2 > 1.4) {
+        statusHtml = `<div class="alert alert-danger">🚨 ppO₂-Grenzwert überschritten (${ppO2.toFixed(2)} bar > 1.4 bar)!</div>`;
+    } else if (endBar < reserve) {
         statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten, Restdruck ${Math.floor(endBar)} bar!</div>`;
     } else if (isTG2 && tg1WasDeko) {
         statusHtml = `<div class="alert alert-danger">⚠️ Tauchgang 1 war bereits DEKO-Tauchgang!</div>`;
