@@ -267,6 +267,9 @@ const ZHL16C = [
 
 const WATER_VAPOR_PRESSURE = 0.0627;
 
+// Sicherheitsfakor
+const CONSERVATISM_FACTOR = 0.95;
+
 function getSurfacePressure(altitudeMeters) {
     return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
 }
@@ -305,7 +308,7 @@ function calculateNDL(tissues, targetDepthMeters, surfacePressure) {
     ZHL16C.forEach((comp, i) => {
         const pSubstance = tissues[i];
         if (pAlvTarget > pSubstance) {
-            const pTolSurface = comp.a + (surfacePressure / comp.b);
+            const pTolSurface = (comp.a + (surfacePressure / comp.b)) * CONSERVATISM_FACTOR;
             if (pAlvTarget > pTolSurface) {
                 const k = Math.LN2 / comp.halfLife;
                 const timeToLimit = -Math.log((pTolSurface - pAlvTarget) / (pSubstance - pAlvTarget)) / k;
@@ -324,7 +327,7 @@ function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
 
     ZHL16C.forEach((comp, i) => {
         const pSubstance = tissues[i];
-        const minCeilingBar = (pSubstance - comp.a) * comp.b;
+        const minCeilingBar = ((pSubstance / CONSERVATISM_FACTOR) - comp.a) * comp.b;
         const minCeilingMeters = Math.max(0, (minCeilingBar - surfacePressure) * 10);
         if (minCeilingMeters > currentDepth) {
             currentDepth = minCeilingMeters;
@@ -342,7 +345,7 @@ function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
 
             let safeToAscend = true;
             for (let i = 0; i < ZHL16C.length; i++) {
-                const pTolNext = ZHL16C[i].a + (nextAmbBar / ZHL16C[i].b);
+                const pTolNext = (ZHL16C[i].a + (nextAmbBar / ZHL16C[i].b)) * CONSERVATISM_FACTOR;
                 if (tissues[i] > pTolNext) {
                     safeToAscend = false;
                     break;
