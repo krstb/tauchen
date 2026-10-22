@@ -2,9 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tauchgangs-Planer (Bühlmann ZH-L16C)</title>
-  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verhältnisrechner</title>
+
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png"> 
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -13,7 +13,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
+
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -22,576 +22,486 @@
         });
       }
     </script>
-			
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Fix für PWA-Ränder und den blauen Balken */
         html {
             background-color: #000000 !important;
             overscroll-behavior-y: none;
         }
-
-        :root {
-            --primary: #0284c7;
-            --bg: #000000;
-            --card-bg: #334155;
-            --text: #ffffff;
-            --text-muted: #cbd5e1;
-            --border: #6A7E9A;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --success: #22c55e;
+        body { 
+            background-color: #3289D1 !important; 
+            font-family: 'Inter', sans-serif;
         }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 4px;
-            font-size: 0.85rem;
-            line-height: 1.25;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary);
-            margin: 4px 0 2px 0;
-            font-size: 1.4rem;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 6px;
-            padding: 6px 8px;
-            margin-bottom: 6px;
-            border: 1px solid var(--border);
-        }
-
-        h2 {
-            margin: 0 0 4px 0;
-            font-size: 0.9rem;
-            color: var(--primary);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 2px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 4px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            font-weight: 500;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        input, select {
-            padding: 3px 6px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.9rem;
-            background: #0f172a;
-            color: var(--text);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input:focus, select:focus {
-            outline: 1px solid var(--primary);
-        }
-
-        .results {
-            margin-top: 4px;
-            padding: 4px 6px;
-            border-radius: 4px;
-            background: #0f172a;
-            border: 1px solid var(--border);
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2px 0;
-            border-bottom: 1px solid #1e293b;
-            font-size: 0.8rem;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .alert {
-            padding: 4px;
-            border-radius: 4px;
-            margin-top: 4px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-
-        .alert-warning { background-color: #78350f; color: #fde68a; border: 1px solid #92400e; }
-        .alert-danger { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
-        .alert-success { background-color: #064e3b; color: #bbf7d0; border: 1px solid #065f46; }
         
-        .note {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-align: center;
-            margin: 4px 0;
+        /* Segmented Control Styling */
+        .segmented-control button {
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .segmented-control button.active {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
     </style>
 </head>
-<body>
+<body class="text-white flex items-start justify-center min-h-screen p-4 pt-4">
 
-<div class="container">
-    <h1>🤿 Tauchgangs-Planer</h1>
-    <div class="subtitle">Gewebesättigung (Bühlmann ZH-L16C)</div>
-
-    <!-- AMV RECHNER -->
-    <div class="card">
-        <h2>1. AMV ermitteln und O2 in % eingeben</h2>
-        <div class="grid">
-            <div class="form-group"><label for="amv_depth">Durchschnitt. Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_depth" value="15"></div>
-            <div class="form-group"><label for="amv_time">Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_time" value="35"></div>
-            <div class="form-group"><label for="amv_tank">Flaschevolumen (L)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_tank" value="12"></div>
-            <div class="form-group"><label for="amv_bar">Luftverbrauch (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_bar" value="150"></div>
+    <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 md:p-5">
+        
+        <div class="text-center mb-3">
+            <h1 class="text-xl font-bold text-gray-800">Verhältnis-Rechner</h1>
+            <p class="text-gray-500 text-sm mt-1">Für Mischungen, Maßstäbe, Seitenverhältnisse und Pixel</p>
         </div>
-        <div class="grid" style="margin-top:4px;">
-            <div class="form-group"><label>AMV</label><div id="amv_result" style="padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-weight:bold; color:var(--primary); background:#0f172a; height:24px; box-sizing:border-box;">-- L/min</div></div>
-            <div class="form-group"><label for="tg_O2">O2 21% oder Nitrox 32, 36</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_O2" value="21"></div>
+        
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Art der Eingabe
+            </label>
+            <div class="grid grid-cols-2">
+                <div id="ratio-mode-selector" class="segmented-control col-span-2 flex w-full rounded-xl bg-gray-200 p-1.5 gap-2">
+                    <button id="ratio-mode-ratio-btn" class="flex-1 py-2 px-3 text-sm font-medium text-gray-700 rounded-lg focus:outline-none active">
+                        Verhältnis (1:n)
+                    </button>
+                    <button id="ratio-mode-percent-btn" class="flex-1 py-2 px-3 text-sm font-medium text-gray-700 rounded-lg focus:outline-none">
+                        Prozent (%)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Verhältnis / Maßstab
+                </label>
+                <div id="ratio-inputs" class="flex items-center space-x-2">
+                    <input type="text" inputmode="decimal" id="ratio1" placeholder="Teile 1" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-center text-gray-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" value="1">
+                    <span class="text-lg font-bold text-gray-400">:</span>
+                    <input type="text" inputmode="decimal" id="ratio2" placeholder="Teile 2" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-center text-gray-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" value="2">
+                </div>
+                <div id="percent-inputs" class="hidden">
+                    <input type="text" inputmode="decimal" id="percent-value" placeholder="Anteil 1 in %" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-center text-gray-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" value="50">
+                </div>
+            </div>
+
+            <div class="segmented-control flex w-full rounded-xl bg-gray-200 p-1.5 gap-2">
+                <button id="tab-total" class="flex-1 py-2 px-3 text-sm font-medium text-gray-700 rounded-lg focus:outline-none active">
+                    Gesamtmenge
+                </button>
+                <button id="tab-single" class="flex-1 py-2 px-3 text-sm font-medium text-gray-700 rounded-lg focus:outline-none">
+                    Einzelmenge
+                </button>
+            </div>
+
+            <div id="tab-panels" class="space-y-3">
+                <div id="panel-total">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label id="label-totalAmount" for="totalAmount" class="block text-sm font-medium text-gray-700 mb-1">
+                                Gesamtmenge
+                            </label>
+                            <input type="text" inputmode="decimal" id="totalAmount" placeholder="z.B. 1000" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label for="unit" class="block text-sm font-medium text-gray-700 mb-1">
+                                Einheit
+                            </label>
+                            <select id="unit" class="w-full p-2 text-sm bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                <option selected>g</option>
+                                <option>kg</option>
+                                <option>ml</option>
+                                <option>l</option>
+                                <option>mm</option>
+                                <option>cm</option>
+                                <option>dm</option>
+                                <option>m</option>
+                                <option>km</option>
+                                <option>Pixel</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-single" class="hidden">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label id="label-amount1" for="amount1" class="block text-sm font-medium text-gray-700 mb-1">
+                                Menge Teil 1
+                            </label>
+                            <input type="text" inputmode="decimal" id="amount1" placeholder="Wert" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label id="label-amount2" for="amount2" class="block text-sm font-medium text-gray-700 mb-1">
+                                Menge Teil 2
+                            </label>
+                            <input type="text" inputmode="decimal" id="amount2" placeholder="Wert" class="w-full p-2 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label for="unit-single" class="block text-sm font-medium text-gray-700 mb-1">
+                                Einheit
+                            </label>
+                            <select id="unit-single" class="w-full p-2 text-sm bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                <option selected>g</option>
+                                <option>kg</option>
+                                <option>ml</option>
+                                <option>l</option>
+                                <option>mm</option>
+                                <option>cm</option>
+                                <option>dm</option>
+                                <option>m</option>
+                                <option>km</option>
+                                <option>Pixel</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-message" class="text-red-500 text-center text-sm mt-3 font-medium hidden"></div>
+        
+        <div id="results-container" class="mt-4 pt-4 border-t border-gray-200 hidden">
+            <h2 class="text-base font-semibold text-center text-gray-800 mb-3">Ergebnis</h2>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="bg-blue-50 p-3 rounded-lg flex items-center justify-center space-x-1">
+                    <span id="result1-label" class="font-medium text-sm text-blue-800">Menge Teil 1:</span>
+                    <span id="result1" class="text-sm font-bold text-blue-900"></span>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg flex items-center justify-center space-x-1">
+                    <span id="result2-label" class="font-medium text-sm text-green-800">Menge Teil 2:</span>
+                    <span id="result2" class="text-sm font-bold text-green-900"></span>
+                </div>
+                <div id="result-total-sum" class="bg-gray-100 p-3 rounded-lg flex items-center justify-center space-x-1">
+                    <span id="result-total-label" class="font-medium text-sm text-gray-800">Menge:</span>
+                    <span id="resultTotal" class="text-sm font-bold text-gray-900"></span>
+                </div>
+                <div id="result-total-product" class="hidden bg-purple-50 p-3 rounded-lg flex items-center justify-center space-x-1">
+                    <span class="font-medium text-sm text-purple-800">Auflösung:</span>
+                    <span id="resultProduct" class="text-sm font-bold text-purple-900"></span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>Tauchzeit und Tiefe sowie Höhe eingeben</h2>
-        <div class="grid">
-            <div class="form-group full-width">
-                <label for="altitude_preset" style="color:var(--warning)">Gewässerhöhe (m ü. N.N.)</label>
-                <select id="altitude_preset">
-                    <option value="0">Meereshöhe bis 700 m ü. N.N. (Standard)</option>
-                    <option value="1100">Bergsee: 701 m - 1500 m ü. N.N.</option>
-                    <option value="custom">Manuelle Gewässerhöhe eingeben</option>
-                </select>
-            </div>
+    <script>
+        // DOM-Elemente
+        const ratio1Input = document.getElementById('ratio1');
+        const ratio2Input = document.getElementById('ratio2');
+        const percentValueInput = document.getElementById('percent-value');
+        const unitInput = document.getElementById('unit');
+        const unitSingleInput = document.getElementById('unit-single');
+        const totalAmountInput = document.getElementById('totalAmount');
+        const amount1Input = document.getElementById('amount1');
+        const amount2Input = document.getElementById('amount2');
+        const result1Span = document.getElementById('result1');
+        const result2Span = document.getElementById('result2');
+        const resultTotalSpan = document.getElementById('resultTotal');
+        const resultProductSpan = document.getElementById('resultProduct');
+        const resultsContainer = document.getElementById('results-container');
+        const resultTotalSumDiv = document.getElementById('result-total-sum');
+        const resultTotalProductDiv = document.getElementById('result-total-product');
+        const errorMessageDiv = document.getElementById('error-message');
+        const tabTotalBtn = document.getElementById('tab-total');
+        const tabSingleBtn = document.getElementById('tab-single');
+        const panelTotal = document.getElementById('panel-total');
+        const panelSingle = document.getElementById('panel-single');
+        const ratioModeRatioBtn = document.getElementById('ratio-mode-ratio-btn');
+        const ratioModePercentBtn = document.getElementById('ratio-mode-percent-btn');
+        const ratioInputsDiv = document.getElementById('ratio-inputs');
+        const percentInputsDiv = document.getElementById('percent-inputs');
+        const labelTotalAmount = document.getElementById('label-totalAmount');
+        const labelAmount1 = document.getElementById('label-amount1');
+        const labelAmount2 = document.getElementById('label-amount2');
+        const result1Label = document.getElementById('result1-label');
+        const result2Label = document.getElementById('result2-label');
+        const resultTotalLabel = document.getElementById('result-total-label');
 
-            <div class="form-group full-width" id="custom_altitude_group" style="display:none;">
-                <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.)</label>
-                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="custom_altitude" value="1000">
-            </div>
+        let calculationMode = 'total'; 
+        let ratioMode = 'ratio'; 
 
-            <div class="form-group"><label for="tg_amv">AMV übernommen in L/min</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_amv" value="15"></div>
-            <div class="form-group"><label for="tg_tank">Flaschenvolumen (L)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_tank" value="12"></div>
-            <div class="form-group"><label for="tg_start_bar">Startdruck (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_start_bar" value="200"></div>
-            <div class="form-group"><label for="tg_reserve">Reserve (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_reserve" value="50"></div>
+        // Hilfsfunktionen für Punkt-zu-Komma und Formatierung
+        function parseGermanFloat(str) {
+            if (typeof str !== 'string' || str.trim() === '') return NaN;
+            return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+        }
 
-            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">Tauchgang 1 Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg1_depth" value="20"></div>
-            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">Tauchgang 1 Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg1_time" value="20"></div>
+        function formatToGermanString(num, decimals) {
+            if (typeof num !== 'number' || isNaN(num)) return '';
+            return num.toFixed(decimals).replace('.', ',');
+        }
 
-            <div class="form-group full-width"><label for="surface_interval">Pause zwischen Tauchgang 1 u. 2 in (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="surface_interval" value="90"></div>
+        function handleInput(e) {
+            let cursorPosition = e.target.selectionStart;
+            let originalValue = e.target.value;
+            
+            // Punkte in Kommas umwandeln und ungültige Zeichen filtern
+            let normalizedValue = originalValue.replace(/\./g, ',');
+            let cleanValue = normalizedValue.replace(/[^0-9,]/g, '');
+            
+            // Maximal ein Komma zulassen
+            const parts = cleanValue.split(',');
+            if (parts.length > 2) {
+                cleanValue = parts[0] + ',' + parts.slice(1).join('');
+            }
+            
+            e.target.value = cleanValue;
+            
+            if (originalValue !== cleanValue) { 
+                cursorPosition = cursorPosition + (cleanValue.length - originalValue.length); 
+            }
+            try {
+                e.target.setSelectionRange(cursorPosition, cursorPosition);
+            } catch (err) {}
+            
+            calculateAndDisplay();
+        }
 
-            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">Tauchgang 2 Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg2_depth" value="15"></div>
-            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">Tauchgang 2 Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg2_time" value="15"></div>
-        </div>
-
-        <!-- AUSGABE TG 1 -->
-        <div class="results">
-            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis Tauchgang 1</div>
-            <div class="result-item"><span>Luftdruck am Gewässer</span><span id="surface_press_display">-- bar</span></div>
-            <div class="result-item"><span>Nullzeit (NDL)</span><span id="tg1_ndl">--</span></div>
-            <div class="result-item"><span>Luft (Verbrauch / Rest)</span><span><span id="tg1_air_needed">--</span> / <span id="tg1_air_left">--</span></span></div>
-            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit</span><span id="tg1_total_time">--</span></div>
-            <div id="tg1_deko_stopps"></div>
-            <div id="tg1_status"></div>
-        </div>
-
-        <!-- AUSGABE TG 2 -->
-        <div class="results" style="margin-top:4px;">
-            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:2px; color:var(--text)">Ergebnis Tauchgang 2</div>
-            <div class="result-item"><span>Rest-Nullzeit (effektiv)</span><span id="tg2_ndl">--</span></div>
-            <div class="result-item"><span>Luft (Verbrauch / Rest)</span><span><span id="tg2_air_needed">--</span> / <span id="tg2_air_left">--</span></span></div>
-            <div class="result-item" style="background:#1e293b; padding:2px 4px; font-weight:bold;"><span>Gesamtzeit</span><span id="tg2_total_time">--</span></div>
-            <div id="tg2_deko_stopps"></div>
-            <div id="tg2_status"></div>
-        </div>
-    </div>
-    
-    <p class="note">von Papa für Max  -  V. 12.0 - 08.26</p>
-</div>
-
-<script>
-// BÜHLMANN ZH-L16C MATHEMATISCHES MODELL WITH ALTITUDE ADJUSTMENT
-
-const ZHL16C = [
-    { halfLife: 4.0,   a: 1.2599, b: 0.5050 },
-    { halfLife: 8.0,   a: 1.0000, b: 0.6514 },
-    { halfLife: 12.5,  a: 0.8618, b: 0.7222 },
-    { halfLife: 18.5,  a: 0.7562, b: 0.7825 },
-    { halfLife: 27.0,  a: 0.6200, b: 0.8126 },
-    { halfLife: 38.3,  a: 0.5043, b: 0.8434 },
-    { halfLife: 54.3,  a: 0.4410, b: 0.8693 },
-    { halfLife: 77.0,  a: 0.4000, b: 0.8910 },
-    { halfLife: 109.0, a: 0.3750, b: 0.9092 },
-    { halfLife: 146.0, a: 0.3500, b: 0.9222 },
-    { halfLife: 187.0, a: 0.3295, b: 0.9319 },
-    { halfLife: 239.0, a: 0.3065, b: 0.9403 },
-    { halfLife: 305.0, a: 0.2835, b: 0.9475 },
-    { halfLife: 390.0, a: 0.2610, b: 0.9528 },
-    { halfLife: 498.0, a: 0.2480, b: 0.9563 },
-    { halfLife: 635.0, a: 0.2327, b: 0.9602 }
-];
-
-const WATER_VAPOR_PRESSURE = 0.0627;
-
-// Sicherheitsfaktor
-const CONSERVATISM_FACTOR = 0.95;
-
-// Hilfsfunktionen für Punkt-zu-Komma Umwandlung
-function parseGermanFloat(str) {
-    if (typeof str !== 'string' || str.trim() === '') return NaN;
-    return parseFloat(str.replace(/\./g, '').replace(',', '.'));
-}
-
-function formatToGermanString(num, decimals) {
-    if (typeof num !== 'number' || isNaN(num)) return '';
-    return num.toFixed(decimals).replace('.', ',');
-}
-
-function handleInput(e) {
-    let cursorPosition = e.target.selectionStart;
-    let originalValue = e.target.value;
-    
-    let normalizedValue = originalValue.replace(/\./g, ',');
-    let cleanValue = normalizedValue.replace(/[^0-9,]/g, '');
-    
-    const parts = cleanValue.split(',');
-    if (parts.length > 2) {
-        cleanValue = parts[0] + ',' + parts.slice(1).join('');
-    }
-    
-    e.target.value = cleanValue;
-    
-    if (originalValue !== cleanValue) {
-        cursorPosition = cursorPosition + (cleanValue.length - originalValue.length);
-    }
-    try {
-        e.target.setSelectionRange(cursorPosition, cursorPosition);
-    } catch (err) {}
-    
-    saveSettings();
-    calculateAMV();
-    calculateDives();
-}
-
-// Formatiert das Feld nur dann, wenn es eine relevante Nachkommastelle hat (schneidet getippte Dezimalstellen nicht ab)
-function formatInputOnBlur(event) {
-    const input = event.target;
-    const value = parseGermanFloat(input.value);
-    if (!isNaN(value)) {
-        // Zeige bis zu 1 Dezimalstelle an, aber nur falls eine Nachkommastelle vorhanden ist
-        const decimals = (input.value.includes(',') && input.value.split(',')[1].length > 0) ? 1 : 0;
-        input.value = formatToGermanString(value, decimals);
-    }
-}
-
-function getSurfacePressure(altitudeMeters) {
-    return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
-}
-
-function getN2Ratio() {
-    const o2Percent = parseGermanFloat(document.getElementById('tg_O2').value) || 21;
-    return (100 - o2Percent) / 100;
-}
-
-function createInitialTissues(surfacePressure) {
-    const n2Ratio = getN2Ratio();
-    const pAlv = (surfacePressure - WATER_VAPOR_PRESSURE) * n2Ratio;
-    return ZHL16C.map(() => pAlv);
-}
-
-function updateTissues(tissues, depthMeters, timeMinutes, surfacePressure) {
-    const n2Ratio = getN2Ratio();
-    const pAmb = surfacePressure + (depthMeters / 10);
-    const pAlv = (pAmb - WATER_VAPOR_PRESSURE) * n2Ratio;
-
-    return tissues.map((pSubstance, i) => {
-        const k = Math.LN2 / ZHL16C[i].halfLife;
-        return pAlv + (pSubstance - pAlv) * Math.exp(-k * timeMinutes);
-    });
-}
-
-function calculateNDL(tissues, targetDepthMeters, surfacePressure) {
-    if (targetDepthMeters <= 0) return 999;
-    
-    const n2Ratio = getN2Ratio();
-    const pAmbTarget = surfacePressure + (targetDepthMeters / 10);
-    const pAlvTarget = (pAmbTarget - WATER_VAPOR_PRESSURE) * n2Ratio;
-
-    let minNDL = 999;
-
-    ZHL16C.forEach((comp, i) => {
-        const pSubstance = tissues[i];
-        if (pAlvTarget > pSubstance) {
-            const pTolSurface = (comp.a + (surfacePressure / comp.b)) * CONSERVATISM_FACTOR;
-            if (pAlvTarget > pTolSurface) {
-                const k = Math.LN2 / comp.halfLife;
-                const timeToLimit = -Math.log((pTolSurface - pAlvTarget) / (pSubstance - pAlvTarget)) / k;
-                if (timeToLimit < minNDL) minNDL = timeToLimit;
+        function formatInputOnBlur(event, decimals) {
+            const input = event.target;
+            const value = parseGermanFloat(input.value);
+            if (!isNaN(value)) {
+                input.value = formatToGermanString(value, decimals);
             }
         }
-    });
 
-    return minNDL < 0 ? 0 : Math.floor(minNDL);
-}
-
-function calculateDecompressionStops(tissuesAtDepth, surfacePressure) {
-    let tissues = [...tissuesAtDepth];
-    let stops = [];
-    let currentDepth = 0;
-
-    ZHL16C.forEach((comp, i) => {
-        const pSubstance = tissues[i];
-        const minCeilingBar = ((pSubstance / CONSERVATISM_FACTOR) - comp.a) * comp.b;
-        const minCeilingMeters = Math.max(0, (minCeilingBar - surfacePressure) * 10);
-        if (minCeilingMeters > currentDepth) {
-            currentDepth = minCeilingMeters;
+        function showError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
         }
-    });
 
-    currentDepth = Math.ceil(currentDepth / 3) * 3;
-
-    while (currentDepth > 0) {
-        let stopMinutes = 0;
+        function hideError() {
+            errorMessageDiv.classList.add('hidden');
+        }
         
-        while (true) {
-            const nextDepth = currentDepth - 3;
-            const nextAmbBar = surfacePressure + (nextDepth / 10);
+        function clearAll() {
+            hideError();
+            resultsContainer.classList.add('hidden');
+            totalAmountInput.value = '';
+            amount1Input.value = '';
+            amount2Input.value = '';
+            result1Span.textContent = '';
+            result2Span.textContent = '';
+            resultTotalSpan.textContent = '';
+        }
 
-            let safeToAscend = true;
-            for (let i = 0; i < ZHL16C.length; i++) {
-                const pTolNext = (ZHL16C[i].a + (nextAmbBar / ZHL16C[i].b)) * CONSERVATISM_FACTOR;
-                if (tissues[i] > pTolNext) {
-                    safeToAscend = false;
-                    break;
+        function switchTab(mode) {
+            calculationMode = mode;
+            clearAll();
+            if (mode === 'total') {
+                tabTotalBtn.classList.add('active');
+                tabSingleBtn.classList.remove('active');
+                panelTotal.classList.remove('hidden');
+                panelSingle.classList.add('hidden');
+            } else {
+                tabSingleBtn.classList.add('active');
+                tabTotalBtn.classList.remove('active');
+                panelSingle.classList.remove('hidden');
+                panelTotal.classList.add('hidden');
+            }
+            calculateAndDisplay();
+        }
+        
+        function switchRatioMode(mode) {
+            ratioMode = mode;
+            if (mode === 'ratio') {
+                ratioModeRatioBtn.classList.add('active');
+                ratioModePercentBtn.classList.remove('active');
+                ratioInputsDiv.classList.remove('hidden');
+                percentInputsDiv.classList.add('hidden');
+            } else {
+                ratioModePercentBtn.classList.add('active');
+                ratioModeRatioBtn.classList.remove('active');
+                percentInputsDiv.classList.remove('hidden');
+                ratioInputsDiv.classList.add('hidden');
+            }
+            calculateAndDisplay();
+        }
+
+        function calculateAndDisplay() {
+            hideError();
+            let ratio1, ratio2;
+            if (ratioMode === 'ratio') {
+                ratio1 = parseGermanFloat(ratio1Input.value);
+                ratio2 = parseGermanFloat(ratio2Input.value);
+            } else {
+                const percentValue = parseGermanFloat(percentValueInput.value);
+                if (isNaN(percentValue) || percentValue < 0 || percentValue > 100) {
+                    showError('Bitte einen gültigen Prozentwert zwischen 0 und 100 eingeben.');
+                    return;
+                }
+                ratio1 = percentValue;
+                ratio2 = 100 - percentValue;
+            }
+
+            const unit = (calculationMode === 'total') ? unitInput.value.trim() : unitSingleInput.value.trim();
+            const lengthUnits = ['mm', 'cm', 'dm', 'm', 'km'];
+            if (lengthUnits.includes(unit.toLowerCase())) {
+                labelTotalAmount.textContent = 'Länge';
+                labelAmount1.textContent = 'Länge Teil 1';
+                labelAmount2.textContent = 'Länge Teil 2';
+                result1Label.textContent = "Länge Teil 1:";
+                result2Label.textContent = "Länge Teil 2:";
+                resultTotalLabel.textContent = "Länge:";
+            } else {
+                labelTotalAmount.textContent = 'Menge';
+                labelAmount1.textContent = 'Menge Teil 1';
+                labelAmount2.textContent = 'Menge Teil 2';
+                result1Label.textContent = "Menge Teil 1:";
+                result2Label.textContent = "Menge Teil 2:";
+                resultTotalLabel.textContent = "Gesamtmenge:";
+            }
+
+            if (isNaN(ratio1) || isNaN(ratio2) || ratio1 < 0 || ratio2 < 0) {
+                if ((ratioMode === 'ratio' && (ratio1Input.value !== '' || ratio2Input.value !== '')) || (ratioMode === 'percent' && percentValueInput.value !== '')) {
+                    showError('Bitte gültige, nicht-negative Verhältniszahlen eingeben.');
+                } else {
+                    resultsContainer.classList.add('hidden');
+                }
+                return;
+            }
+
+            if (ratio1 + ratio2 === 0) { 
+                 showError('Die Summe der Verhältnisteile darf nicht Null sein.'); 
+                 return;
+            }
+
+            let amount1, amount2, totalAmount;
+            let showResults = false;
+
+            if (calculationMode === 'total') {
+                totalAmount = parseGermanFloat(totalAmountInput.value);
+                if (!isNaN(totalAmount) && totalAmount >= 0) {
+                    const totalRatio = ratio1 + ratio2;
+                    amount1 = (ratio1 / totalRatio) * totalAmount;
+                    amount2 = (ratio2 / totalRatio) * totalAmount;
+                    showResults = true;
+                }
+            } else {
+                const inputAmount1 = parseGermanFloat(amount1Input.value);
+                const inputAmount2 = parseGermanFloat(amount2Input.value);
+                if (!isNaN(inputAmount1) && inputAmount1 >= 0) {
+                    if (ratio1 === 0) {
+                        showError('Kann nicht aus Teil 1 berechnen, wenn sein Anteil 0 ist.');
+                        return;
+                    }
+                    amount1 = inputAmount1;
+                    amount2 = (amount1 / ratio1) * ratio2;
+                    totalAmount = amount1 + amount2;
+                    showResults = true;
+                } else if (!isNaN(inputAmount2) && inputAmount2 >= 0) { 
+                     if (ratio2 === 0) {
+                        showError('Kann nicht aus Teil 2 berechnen, wenn sein Anteil 0 ist.');
+                        return;
+                    }
+                    amount2 = inputAmount2;
+                    amount1 = (amount2 / ratio2) * ratio1;
+                    totalAmount = amount1 + amount2;
+                    showResults = true;
                 }
             }
 
-            if (safeToAscend) break;
+            if (showResults) {
+                const formatOutput = (value, currentUnit) => {
+                    const unitLower = currentUnit.toLowerCase();
+                    if (unitLower === 'pixel') {
+                        const displayValue = Math.round(value);
+                        return `${displayValue.toLocaleString('de-DE')} ${currentUnit}`;
+                    }
+                    const weightConversion = { 'g': 1, 'kg': 1000 };
+                    const volumeConversion = { 'ml': 1, 'l': 1000 };
+                    const lengthConversion = { 'mm': 1, 'cm': 10, 'dm': 100, 'm': 1000, 'km': 1000000 };
+                    let conversionMap, unitsOrdered;
+                    if (weightConversion[unitLower]) {
+                        conversionMap = weightConversion;
+                        unitsOrdered = [{ unit: 'kg', val: 1000 }, { unit: 'g', val: 1 }];
+                    } else if (volumeConversion[unitLower]) {
+                        conversionMap = volumeConversion;
+                        unitsOrdered = [{ unit: 'l', val: 1000 }, { unit: 'ml', val: 1 }];
+                    } else if (lengthConversion[unitLower]) {
+                        conversionMap = lengthConversion;
+                        unitsOrdered = [{ unit: 'km', val: 1000000 }, { unit: 'm', val: 1000 }, { unit: 'dm', val: 100 }, { unit: 'cm', val: 10 }, { unit: 'mm', val: 1 }];
+                    } else {
+                        return `${value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currentUnit}`;
+                    }
+                    const valueInBaseUnit = value * conversionMap[unitLower];
+                    if (valueInBaseUnit === 0) return `0,00 ${unitsOrdered[unitsOrdered.length - 1].unit}`;
+                    let bestValue = valueInBaseUnit;
+                    let bestUnit = unitsOrdered[unitsOrdered.length - 1].unit;
+                    for (const unitInfo of unitsOrdered) {
+                        if (valueInBaseUnit >= unitInfo.val) {
+                            bestValue = valueInBaseUnit / unitInfo.val;
+                            bestUnit = unitInfo.unit;
+                            break;
+                        }
+                    }
+                    return `${bestValue.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${bestUnit}`;
+                };
 
-            tissues = updateTissues(tissues, currentDepth, 1, surfacePressure);
-            stopMinutes++;
-            if (stopMinutes > 300) break;
+                result1Span.textContent = formatOutput(amount1, unit);
+                result2Span.textContent = formatOutput(amount2, unit);
+
+                const unitsToHideTotal = ['mm', 'cm', 'dm', 'm', 'km'];
+                resultTotalSumDiv.classList.add('hidden');
+                resultTotalProductDiv.classList.add('hidden');
+
+                if (unit.toLowerCase() === 'pixel') {
+                    const finalAmount1 = Math.round(amount1);
+                    const finalAmount2 = Math.round(amount2);
+                    const totalPixels = finalAmount1 * finalAmount2;
+                    const megaPixels = totalPixels / 1000000;
+                    resultProductSpan.innerHTML = `${megaPixels.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MP`;
+                    resultTotalProductDiv.classList.remove('hidden');
+                } else if (!unitsToHideTotal.includes(unit.toLowerCase())) {
+                    resultTotalSpan.textContent = formatOutput(totalAmount, unit);
+                    resultTotalSumDiv.classList.remove('hidden');
+                }
+                resultsContainer.classList.remove('hidden');
+            } else {
+                resultsContainer.classList.add('hidden');
+            }
         }
 
-        if (stopMinutes > 0) {
-            stops.push({ depth: currentDepth, min: stopMinutes });
-        }
+        // Event-Listener hinzufügen
+        tabTotalBtn.addEventListener('click', () => switchTab('total'));
+        tabSingleBtn.addEventListener('click', () => switchTab('single'));
+        ratioModeRatioBtn.addEventListener('click', () => switchRatioMode('ratio'));
+        ratioModePercentBtn.addEventListener('click', () => switchRatioMode('percent'));
 
-        currentDepth -= 3;
-    }
-
-    return { stops, finalTissues: tissues };
-}
-
-const allInputs = [
-    'amv_depth', 'amv_time', 'amv_tank', 'amv_bar',
-    'altitude_preset', 'custom_altitude',
-    'tg_O2', 'tg_amv', 'tg_tank', 'tg_start_bar', 'tg_reserve',
-    'tg1_depth', 'tg1_time', 'surface_interval', 'tg2_depth', 'tg2_time'
-];
-
-function loadSettings() {
-    allInputs.forEach(id => {
-        const savedValue = localStorage.getItem(id);
-        if (savedValue !== null) document.getElementById(id).value = savedValue;
-    });
-    toggleCustomAltitude();
-}
-
-function saveSettings() {
-    allInputs.forEach(id => {
-        localStorage.setItem(id, document.getElementById(id).value);
-    });
-}
-
-function toggleCustomAltitude() {
-    const preset = document.getElementById('altitude_preset').value;
-    const customGroup = document.getElementById('custom_altitude_group');
-    if (preset === 'custom') {
-        customGroup.style.display = 'flex';
-    } else {
-        customGroup.style.display = 'none';
-    }
-}
-
-function getSelectedAltitude() {
-    const preset = document.getElementById('altitude_preset').value;
-    if (preset === 'custom') {
-        return parseGermanFloat(document.getElementById('custom_altitude').value) || 0;
-    }
-    return parseGermanFloat(preset) || 0;
-}
-
-function calculateAMV() {
-    const depth = parseGermanFloat(document.getElementById('amv_depth').value) || 0;
-    const time = parseGermanFloat(document.getElementById('amv_time').value) || 1;
-    const tank = parseGermanFloat(document.getElementById('amv_tank').value) || 1;
-    const bar = parseGermanFloat(document.getElementById('amv_bar').value) || 0;
-    const altitude = getSelectedAltitude();
-    const surfacePressure = getSurfacePressure(altitude);
-    const pAmb = surfacePressure + (depth / 10);
-    const amv = (bar * tank) / (pAmb * time);
-    
-    if (amv > 0 && isFinite(amv)) {
-        document.getElementById('amv_result').innerText = formatToGermanString(amv, 1) + " L/min";
-        document.getElementById('tg_amv').value = formatToGermanString(amv, 1);
-        saveSettings();
-    }
-}
-
-function calculateDives() {
-    const altitude = getSelectedAltitude();
-    const surfacePressure = getSurfacePressure(altitude);
-    document.getElementById('surface_press_display').innerText = formatToGermanString(surfacePressure, 3) + " bar (" + Math.round(altitude) + " m ü. N.N.)";
-
-    const o2Percent = parseGermanFloat(document.getElementById('tg_O2').value) || 21;
-    const amv = parseGermanFloat(document.getElementById('tg_amv').value) || 15;
-    const tank = parseGermanFloat(document.getElementById('tg_tank').value) || 12;
-    const startBar = parseGermanFloat(document.getElementById('tg_start_bar').value) || 200;
-    const reserve = parseGermanFloat(document.getElementById('tg_reserve').value) || 50;
-
-    const tg1Depth = parseGermanFloat(document.getElementById('tg1_depth').value) || 0;
-    const tg1Time = parseGermanFloat(document.getElementById('tg1_time').value) || 0;
-    const surfaceInterval = parseGermanFloat(document.getElementById('surface_interval').value) || 0;
-    const tg2Depth = parseGermanFloat(document.getElementById('tg2_depth').value) || 0;
-    const tg2Time = parseGermanFloat(document.getElementById('tg2_time').value) || 0;
-
-    const pAmb1 = surfacePressure + (tg1Depth / 10);
-    const pAmb2 = surfacePressure + (tg2Depth / 10);
-    const ppO2_1 = pAmb1 * (o2Percent / 100);
-    const ppO2_2 = pAmb2 * (o2Percent / 100);
-
-    let tissues = createInitialTissues(surfacePressure);
-
-    // --- TG 1 ---
-    const ndl1 = calculateNDL(tissues, tg1Depth, surfacePressure);
-    document.getElementById('tg1_ndl').innerText = (ndl1 >= 999) ? "∞" : ndl1 + " min";
-
-    tissues = updateTissues(tissues, tg1Depth, tg1Time, surfacePressure);
-    const deko1 = calculateDecompressionStops(tissues, surfacePressure);
-
-    const barCons1 = (amv * pAmb1 * tg1Time) / tank;
-    const endBar1 = startBar - barCons1;
-    document.getElementById('tg1_air_needed').innerText = Math.ceil(barCons1) + " bar";
-    document.getElementById('tg1_air_left').innerText = Math.floor(endBar1) + " bar";
-
-    const isDeko1 = deko1.stops.length > 0;
-    renderOutput(tg1Time, deko1.stops, 'tg1_total_time', 'tg1_deko_stopps', 'tg1_status', endBar1, reserve, false, false, ppO2_1);
-
-    tissues = deko1.finalTissues;
-
-    // --- PAUSE ---
-    tissues = updateTissues(tissues, 0, surfaceInterval, surfacePressure);
-
-    // --- TG 2 ---
-    const ndl2 = calculateNDL(tissues, tg2Depth, surfacePressure);
-    document.getElementById('tg2_ndl').innerText = (ndl2 >= 999) ? "∞" : ndl2 + " min";
-
-    tissues = updateTissues(tissues, tg2Depth, tg2Time, surfacePressure);
-    const deko2 = calculateDecompressionStops(tissues, surfacePressure);
-
-    const barCons2 = (amv * pAmb2 * tg2Time) / tank;
-    const endBar2 = startBar - barCons2;
-    document.getElementById('tg2_air_needed').innerText = Math.ceil(barCons2) + " bar";
-    document.getElementById('tg2_air_left').innerText = Math.floor(endBar2) + " bar";
-
-    renderOutput(tg2Time, deko2.stops, 'tg2_total_time', 'tg2_deko_stopps', 'tg2_status', endBar2, reserve, true, isDeko1, ppO2_2);
-}
-
-function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, endBar, reserve, isTG2, tg1WasDeko, ppO2) {
-    let stoppsHtml = "";
-    let statusHtml = "";
-    let dekoStoppsSumme = 0;
-
-    if (rawPlannedTime <= 0) {
-        document.getElementById(totalTimeId).innerText = "--";
-        document.getElementById(stoppsId).innerHTML = "";
-        document.getElementById(statusId).innerHTML = "";
-        return;
-    }
-
-    if (stops.length === 0) {
-        dekoStoppsSumme = 3;
-        stoppsHtml = `<div class="result-item" style="color:var(--success)"><span>Sicherheitsstopp</span><span>3 m / 3 min</span></div>`;
-    } else {
-        stoppsHtml = `<div class="result-item" style="color:var(--danger); font-weight:bold;"><span>Dekostopps:</span><span></span></div>`;
-        stops.forEach(st => {
-            stoppsHtml += `<div class="result-item"><span>${st.depth} m </span> <span>${st.min} min</span></div>`;
-            dekoStoppsSumme += st.min;
+        const allInputs = [ratio1Input, ratio2Input, percentValueInput, totalAmountInput, amount1Input, amount2Input];
+        
+        allInputs.forEach(input => {
+            input.addEventListener('input', handleInput);
         });
-    }
 
-    let totalTimeCombined = rawPlannedTime + dekoStoppsSumme;
-    document.getElementById(totalTimeId).innerText = totalTimeCombined + " min";
+        // Formatierung bei Verlassen des Feldes (Blur)
+        ratio1Input.addEventListener('blur', (e) => formatInputOnBlur(e, 0));
+        ratio2Input.addEventListener('blur', (e) => formatInputOnBlur(e, 0));
+        percentValueInput.addEventListener('blur', (e) => formatInputOnBlur(e, 1));
+        totalAmountInput.addEventListener('blur', (e) => formatInputOnBlur(e, 2));
+        amount1Input.addEventListener('blur', (e) => formatInputOnBlur(e, 2));
+        amount2Input.addEventListener('blur', (e) => formatInputOnBlur(e, 2));
 
-    if (ppO2 > 1.4) {
-        statusHtml = `<div class="alert alert-danger">🚨 ppO₂-Grenzwert überschritten (${formatToGermanString(ppO2, 2)} bar > 1.4 bar)!</div>`;
-    } else if (endBar < reserve) {
-        statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten, Restdruck ${Math.floor(endBar)} bar!</div>`;
-    } else if (isTG2 && tg1WasDeko) {
-        statusHtml = `<div class="alert alert-danger">⚠️ Tauchgang 1 war bereits DEKO-Tauchgang!</div>`;
-    } else if (stops.length > 0) {
-        statusHtml = `<div class="alert alert-warning">⚠️ DEKO-Tauchgang!</div>`;
-    } else {
-        statusHtml = `<div class="alert alert-success">✅ OK</div>`;
-    }
+        [unitInput, unitSingleInput].forEach(select => {
+            select.addEventListener('change', calculateAndDisplay);
+        });
 
-    document.getElementById(stoppsId).innerHTML = stoppsHtml;
-    document.getElementById(statusId).innerHTML = statusHtml;
-}
+        unitInput.addEventListener('change', () => { unitSingleInput.value = unitInput.value; });
+        unitSingleInput.addEventListener('change', () => { unitInput.value = unitInput.value; });
 
-document.getElementById('altitude_preset').addEventListener('change', () => {
-    toggleCustomAltitude();
-    saveSettings();
-    calculateAMV();
-    calculateDives();
-});
+        amount1Input.addEventListener('beforeinput', () => { if (amount1Input.value !== '') amount2Input.value = ''; });
+        amount2Input.addEventListener('beforeinput', () => { if (amount2Input.value !== '') amount1Input.value = ''; });
 
-allInputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-        el.addEventListener('input', handleInput);
-        el.addEventListener('blur', formatInputOnBlur);
-    }
-});
-
-loadSettings();
-calculateAMV();
-calculateDives();
-</script>
+        window.addEventListener('load', () => switchRatioMode('ratio'));
+    </script>
 </body>
 </html>
