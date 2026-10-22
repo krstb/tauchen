@@ -31,7 +31,7 @@
 
         :root {
             --primary: #0284c7;
-            --bg: ##000000;
+            --bg: #000000;
             --card-bg: #334155;
             --text: #ffffff;
             --text-muted: #cbd5e1;
@@ -176,14 +176,14 @@
     <div class="card">
         <h2>1. AMV ermitteln und O2 in % eingeben</h2>
         <div class="grid">
-            <div class="form-group"><label for="amv_depth">Durchschnitt. Tiefe (m)</label><input type="number" id="amv_depth" value="15" min="0" max="100"></div>
-            <div class="form-group"><label for="amv_time">Zeit (min)</label><input type="number" id="amv_time" value="35" min="0" max="240"></div>
-            <div class="form-group"><label for="amv_tank">Flaschevolumen (L)</label><input type="number" id="amv_tank" value="12" min="4" max="30"></div>
-            <div class="form-group"><label for="amv_bar">Luftverbrauch (bar)</label><input type="number" id="amv_bar" value="150" min="0" max="300" step="5"></div>
+            <div class="form-group"><label for="amv_depth">Durchschnitt. Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_depth" value="15"></div>
+            <div class="form-group"><label for="amv_time">Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_time" value="35"></div>
+            <div class="form-group"><label for="amv_tank">Flaschevolumen (L)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_tank" value="12"></div>
+            <div class="form-group"><label for="amv_bar">Luftverbrauch (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="amv_bar" value="150"></div>
         </div>
         <div class="grid" style="margin-top:4px;">
             <div class="form-group"><label>AMV</label><div id="amv_result" style="padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-weight:bold; color:var(--primary); background:#0f172a; height:24px; box-sizing:border-box;">-- L/min</div></div>
-            <div class="form-group"><label for="tg_O2">O2 21% oder Nitrox 32, 36</label><input type="number" id="tg_O2" value="21" min="21" max="36"></div>
+            <div class="form-group"><label for="tg_O2">O2 21% oder Nitrox 32, 36</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_O2" value="21"></div>
         </div>
     </div>
 
@@ -201,21 +201,21 @@
 
             <div class="form-group full-width" id="custom_altitude_group" style="display:none;">
                 <label for="custom_altitude">Exakte Seehöhe (m ü. N.N.)</label>
-                <input type="number" id="custom_altitude" value="1000" min="0" max="5000">
+                <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="custom_altitude" value="1000">
             </div>
 
-            <div class="form-group"><label for="tg_amv">AMV übernommen in L/min</label><input type="number" id="tg_amv" value="15" min="5" step="0.1"></div>
-            <div class="form-group"><label for="tg_tank">Flaschenvolumen (L)</label><input type="number" id="tg_tank" value="12" min="4" max="30"></div>
-            <div class="form-group"><label for="tg_start_bar">Startdruck (bar)</label><input type="number" id="tg_start_bar" value="200" min="0" max="300"></div>
-            <div class="form-group"><label for="tg_reserve">Reserve (bar)</label><input type="number" id="tg_reserve" value="50" min="50" max="100" step="5"></div>
+            <div class="form-group"><label for="tg_amv">AMV übernommen in L/min</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_amv" value="15"></div>
+            <div class="form-group"><label for="tg_tank">Flaschenvolumen (L)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_tank" value="12"></div>
+            <div class="form-group"><label for="tg_start_bar">Startdruck (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_start_bar" value="200"></div>
+            <div class="form-group"><label for="tg_reserve">Reserve (bar)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg_reserve" value="50"></div>
 
-            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">Tauchgang 1 Tiefe (m)</label><input type="number" id="tg1_depth" value="20" min="0" max="100"></div>
-            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">Tauchgang 1 Zeit (min)</label><input type="number" id="tg1_time" value="20" min="0" max="300"></div>
+            <div class="form-group"><label for="tg1_depth" style="color:var(--primary)">Tauchgang 1 Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg1_depth" value="20"></div>
+            <div class="form-group"><label for="tg1_time" style="color:var(--primary)">Tauchgang 1 Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg1_time" value="20"></div>
 
-            <div class="form-group full-width"><label for="surface_interval">Pause zwischen Tauchgang 1 u. 2 in (min)</label><input type="number" id="surface_interval" value="90" min="0" max="1000"></div>
+            <div class="form-group full-width"><label for="surface_interval">Pause zwischen Tauchgang 1 u. 2 in (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="surface_interval" value="90"></div>
 
-            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">Tauchgang 2 Tiefe (m)</label><input type="number" id="tg2_depth" value="15" min="0" max="100"></div>
-            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">Tauchgang 2 Zeit (min)</label><input type="number" id="tg2_time" value="15" min="0" max="300"></div>
+            <div class="form-group"><label for="tg2_depth" style="color:var(--primary)">Tauchgang 2 Tiefe (m)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg2_depth" value="15"></div>
+            <div class="form-group"><label for="tg2_time" style="color:var(--primary)">Tauchgang 2 Zeit (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="tg2_time" value="15"></div>
         </div>
 
         <!-- AUSGABE TG 1 -->
@@ -267,15 +267,63 @@ const ZHL16C = [
 
 const WATER_VAPOR_PRESSURE = 0.0627;
 
-// Sicherheitsfakor
+// Sicherheitsfaktor
 const CONSERVATISM_FACTOR = 0.95;
+
+// Hilfsfunktionen für Punkt-zu-Komma Umwandlung
+function parseGermanFloat(str) {
+    if (typeof str !== 'string' || str.trim() === '') return NaN;
+    return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+}
+
+function formatToGermanString(num, decimals) {
+    if (typeof num !== 'number' || isNaN(num)) return '';
+    return num.toFixed(decimals).replace('.', ',');
+}
+
+function handleInput(e) {
+    let cursorPosition = e.target.selectionStart;
+    let originalValue = e.target.value;
+    
+    let normalizedValue = originalValue.replace(/\./g, ',');
+    let cleanValue = normalizedValue.replace(/[^0-9,]/g, '');
+    
+    const parts = cleanValue.split(',');
+    if (parts.length > 2) {
+        cleanValue = parts[0] + ',' + parts.slice(1).join('');
+    }
+    
+    e.target.value = cleanValue;
+    
+    if (originalValue !== cleanValue) {
+        cursorPosition = cursorPosition + (cleanValue.length - originalValue.length);
+    }
+    try {
+        e.target.setSelectionRange(cursorPosition, cursorPosition);
+    } catch (err) {}
+    
+    saveSettings();
+    calculateAMV();
+    calculateDives();
+}
+
+// Formatiert das Feld nur dann, wenn es eine relevante Nachkommastelle hat (schneidet getippte Dezimalstellen nicht ab)
+function formatInputOnBlur(event) {
+    const input = event.target;
+    const value = parseGermanFloat(input.value);
+    if (!isNaN(value)) {
+        // Zeige bis zu 1 Dezimalstelle an, aber nur falls eine Nachkommastelle vorhanden ist
+        const decimals = (input.value.includes(',') && input.value.split(',')[1].length > 0) ? 1 : 0;
+        input.value = formatToGermanString(value, decimals);
+    }
+}
 
 function getSurfacePressure(altitudeMeters) {
     return 1.01325 * Math.pow(1 - (0.0065 * altitudeMeters / 288.15), 5.255);
 }
 
 function getN2Ratio() {
-    const o2Percent = parseFloat(document.getElementById('tg_O2').value) || 21;
+    const o2Percent = parseGermanFloat(document.getElementById('tg_O2').value) || 21;
     return (100 - o2Percent) / 100;
 }
 
@@ -403,24 +451,24 @@ function toggleCustomAltitude() {
 function getSelectedAltitude() {
     const preset = document.getElementById('altitude_preset').value;
     if (preset === 'custom') {
-        return parseFloat(document.getElementById('custom_altitude').value) || 0;
+        return parseGermanFloat(document.getElementById('custom_altitude').value) || 0;
     }
-    return parseFloat(preset) || 0;
+    return parseGermanFloat(preset) || 0;
 }
 
 function calculateAMV() {
-    const depth = parseFloat(document.getElementById('amv_depth').value) || 0;
-    const time = parseFloat(document.getElementById('amv_time').value) || 1;
-    const tank = parseFloat(document.getElementById('amv_tank').value) || 1;
-    const bar = parseFloat(document.getElementById('amv_bar').value) || 0;
+    const depth = parseGermanFloat(document.getElementById('amv_depth').value) || 0;
+    const time = parseGermanFloat(document.getElementById('amv_time').value) || 1;
+    const tank = parseGermanFloat(document.getElementById('amv_tank').value) || 1;
+    const bar = parseGermanFloat(document.getElementById('amv_bar').value) || 0;
     const altitude = getSelectedAltitude();
     const surfacePressure = getSurfacePressure(altitude);
     const pAmb = surfacePressure + (depth / 10);
     const amv = (bar * tank) / (pAmb * time);
     
     if (amv > 0 && isFinite(amv)) {
-        document.getElementById('amv_result').innerText = amv.toFixed(1) + " L/min";
-        document.getElementById('tg_amv').value = amv.toFixed(1);
+        document.getElementById('amv_result').innerText = formatToGermanString(amv, 1) + " L/min";
+        document.getElementById('tg_amv').value = formatToGermanString(amv, 1);
         saveSettings();
     }
 }
@@ -428,19 +476,19 @@ function calculateAMV() {
 function calculateDives() {
     const altitude = getSelectedAltitude();
     const surfacePressure = getSurfacePressure(altitude);
-    document.getElementById('surface_press_display').innerText = surfacePressure.toFixed(3) + " bar (" + Math.round(altitude) + " m ü. N.N.)";
+    document.getElementById('surface_press_display').innerText = formatToGermanString(surfacePressure, 3) + " bar (" + Math.round(altitude) + " m ü. N.N.)";
 
-    const o2Percent = parseFloat(document.getElementById('tg_O2').value) || 21;
-    const amv = parseFloat(document.getElementById('tg_amv').value) || 15;
-    const tank = parseFloat(document.getElementById('tg_tank').value) || 12;
-    const startBar = parseFloat(document.getElementById('tg_start_bar').value) || 200;
-    const reserve = parseFloat(document.getElementById('tg_reserve').value) || 50;
+    const o2Percent = parseGermanFloat(document.getElementById('tg_O2').value) || 21;
+    const amv = parseGermanFloat(document.getElementById('tg_amv').value) || 15;
+    const tank = parseGermanFloat(document.getElementById('tg_tank').value) || 12;
+    const startBar = parseGermanFloat(document.getElementById('tg_start_bar').value) || 200;
+    const reserve = parseGermanFloat(document.getElementById('tg_reserve').value) || 50;
 
-    const tg1Depth = parseFloat(document.getElementById('tg1_depth').value) || 0;
-    const tg1Time = parseFloat(document.getElementById('tg1_time').value) || 0;
-    const surfaceInterval = parseFloat(document.getElementById('surface_interval').value) || 0;
-    const tg2Depth = parseFloat(document.getElementById('tg2_depth').value) || 0;
-    const tg2Time = parseFloat(document.getElementById('tg2_time').value) || 0;
+    const tg1Depth = parseGermanFloat(document.getElementById('tg1_depth').value) || 0;
+    const tg1Time = parseGermanFloat(document.getElementById('tg1_time').value) || 0;
+    const surfaceInterval = parseGermanFloat(document.getElementById('surface_interval').value) || 0;
+    const tg2Depth = parseGermanFloat(document.getElementById('tg2_depth').value) || 0;
+    const tg2Time = parseGermanFloat(document.getElementById('tg2_time').value) || 0;
 
     const pAmb1 = surfacePressure + (tg1Depth / 10);
     const pAmb2 = surfacePressure + (tg2Depth / 10);
@@ -511,7 +559,7 @@ function renderOutput(rawPlannedTime, stops, totalTimeId, stoppsId, statusId, en
     document.getElementById(totalTimeId).innerText = totalTimeCombined + " min";
 
     if (ppO2 > 1.4) {
-        statusHtml = `<div class="alert alert-danger">🚨 ppO₂-Grenzwert überschritten (${ppO2.toFixed(2)} bar > 1.4 bar)!</div>`;
+        statusHtml = `<div class="alert alert-danger">🚨 ppO₂-Grenzwert überschritten (${formatToGermanString(ppO2, 2)} bar > 1.4 bar)!</div>`;
     } else if (endBar < reserve) {
         statusHtml = `<div class="alert alert-danger">🚨 Reserve unterschritten, Restdruck ${Math.floor(endBar)} bar!</div>`;
     } else if (isTG2 && tg1WasDeko) {
@@ -534,11 +582,11 @@ document.getElementById('altitude_preset').addEventListener('change', () => {
 });
 
 allInputs.forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-        saveSettings();
-        calculateAMV();
-        calculateDives();
-    });
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', handleInput);
+        el.addEventListener('blur', formatInputOnBlur);
+    }
 });
 
 loadSettings();
